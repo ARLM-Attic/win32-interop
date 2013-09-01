@@ -1,0 +1,36 @@
+﻿using System;
+using System.Diagnostics;
+
+namespace Interop.Core
+{
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
+    [DebuggerNonUserCode]
+    public class WarningAttribute : Attribute
+    {
+        protected bool Ignored { get; set; }
+
+        protected WarningAttribute()
+        {
+        }
+
+        public WarningAttribute(string message)
+        {
+            Message = message;
+            Initialize(message);
+        }
+
+        protected void Initialize(string message)
+        {
+            if (!Ignored)
+            {
+#if SILVERLIGHT
+                Debug.WriteLine(message);
+#else
+                Trace.TraceWarning(message);
+#endif
+            }
+        }
+
+        public string Message { get; private set; }
+    }
+}

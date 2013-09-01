@@ -1,0 +1,12 @@
+﻿<#+
+public const string PublicKey = "00240000048000001401000006020000002400005253413100080000010001002baf1c90" +
+	                            "becc91cc1ffe962d25c349dc5be80b0f6f63baa3a4b7ebdc20bf997dc06a0623dee34f93" +
+	                            "1db7461da052d86337aaecab4f610d381c901f5c43e6839b9eb81cc9d443239eb7d19dd9" +
+	                            "42d5255f4e705bccac5f787b6c1da7a606a0908fd12219493693c31fde5116523010f1b9" +
+	                            "2deb4cc121ce37c1398696e78234bc232dcf7b5b333b5fde87054d431bca58ec31d9aa51" +
+	                            "a2b662770d42ae6cff8697d96409871ef68ed4eb4597eb7fcf5cc95366cf68eef341e5a4" +
+	                            "a4d51626dc680bf043249040788b4fdd0c86e0d5b3ba3a5352d1f423b752c186952f9710" +
+	                            "d4c27cfd59ce19a0bfdcf6243d6f8de1829f812c93f4e4aef7f70ccdbd1dd6f5b754e08a";
+
+public const string PublicKeyToken = "2a3456f590e7ce8b";
+#>

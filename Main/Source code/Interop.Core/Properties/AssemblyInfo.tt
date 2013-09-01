@@ -1,0 +1,37 @@
+﻿<#@ template language="C#" hostSpecific="true" debug="true" #>
+<#@ output extension=".cs" #>
+<#@ assembly Name="System.Core" #>
+<#@ include file="..\..\Include\Security.ttinclude" #>
+<#@ include file="..\..\Include\Versions.ttinclude" #>
+using System;
+using System.Reflection;
+using System.Resources;
+using System.Runtime.InteropServices;
+using System.Security;
+
+[assembly: AssemblyTitle("Interop.Core.dll")]
+[assembly: AssemblyDescription("Windows API Interop for .NET & Silverlight")]
+[assembly: AssemblyProduct("Interop")]
+[assembly: AssemblyCopyright("<#= Copyright #>")]
+
+#if !SILVERLIGHT
+[assembly: SecurityRules(SecurityRuleSet.Level2, SkipVerificationInFullTrust = true)]
+#endif
+[assembly: AllowPartiallyTrustedCallers]
+
+[assembly: ComVisible(false)]
+[assembly: CLSCompliant(true)]
+
+[assembly: NeutralResourcesLanguage("en-us")]
+
+#if NETFX4
+[assembly: AssemblyVersion("<#= Versions.NETFX4.Core #>")]
+[assembly: AssemblyFileVersion("<#= Versions.NETFX4.Core #>")]
+#elif NETFX45
+[assembly: AssemblyVersion("<#= Versions.NETFX45.Core #>")]
+[assembly: AssemblyFileVersion("<#= Versions.NETFX45.Core #>")]
+#elif SL5
+[assembly: AssemblyVersion("<#= Versions.SL5.Core #>")]
+[assembly: AssemblyFileVersion("<#= Versions.SL5.Core #>")]
+#endif
+[assembly: AssemblyInformationalVersion("<#= Version #>")]

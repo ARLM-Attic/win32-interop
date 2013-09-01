@@ -1,0 +1,118 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Include", "Include", "{C5DF2551-59C7-4B22-86E0-77347FBB5246}"
+	ProjectSection(SolutionItems) = preProject
+		Include\Security.ttinclude = Include\Security.ttinclude
+		Include\Versions.ttinclude = Include\Versions.ttinclude
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{D856A888-E846-4D20-B8D9-21235C7DD22B}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Helpers.psm1 = ..\..\Helpers.psm1
+		..\..\Install-Keys.ps1 = ..\..\Install-Keys.ps1
+		..\..\Remove-Keys.ps1 = ..\..\Remove-Keys.ps1
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Core.NETFX4", "Interop.Core\Interop.Core.NETFX4.csproj", "{39D9023D-9B50-457F-A302-380A4D318318}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Core.NETFX45", "Interop.Core\Interop.Core.NETFX45.csproj", "{8ACF616F-A062-4E6F-93D9-89E2DB5DCB34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Core.SL5", "Interop.Core\Interop.Core.SL5.csproj", "{DDD0AC81-0842-4395-BF0A-E4E0B02CFAF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Core.Tests.NETFX4", "Interop.Core.Tests\Interop.Core.Tests.NETFX4.csproj", "{9C9D482B-7812-4589-BF29-10CBFFEB4FB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Core.Tests.NETFX45", "Interop.Core.Tests\Interop.Core.Tests.NETFX45.csproj", "{8C41A241-6CB9-4017-976E-147EE6FFA6E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Core.Tests.SL5", "Interop.Core.Tests\Interop.Core.Tests.SL5.csproj", "{B6444F11-AF05-46C5-9E6D-9F0BA90EA56A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{1589CDD7-F787-4E7B-9A05-B6BE764BAA99}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{46275726-68BB-4995-80B9-397E1C068881}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 7
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs34
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Interop.Core\\Interop.Core.NETFX4.csproj
+		SccProjectTopLevelParentUniqueName1 = Interop.sln
+		SccProjectName1 = Interop.Core
+		SccLocalPath1 = Interop.Core
+		SccProjectUniqueName2 = Interop.Core\\Interop.Core.NETFX45.csproj
+		SccProjectTopLevelParentUniqueName2 = Interop.sln
+		SccProjectName2 = Interop.Core
+		SccLocalPath2 = Interop.Core
+		SccProjectUniqueName3 = Interop.Core\\Interop.Core.SL5.csproj
+		SccProjectTopLevelParentUniqueName3 = Interop.sln
+		SccProjectName3 = Interop.Core
+		SccLocalPath3 = Interop.Core
+		SccProjectUniqueName4 = Interop.Core.Tests\\Interop.Core.Tests.NETFX4.csproj
+		SccProjectTopLevelParentUniqueName4 = Interop.sln
+		SccProjectName4 = Interop.Core.Tests
+		SccLocalPath4 = Interop.Core.Tests
+		SccProjectUniqueName5 = Interop.Core.Tests\\Interop.Core.Tests.NETFX45.csproj
+		SccProjectTopLevelParentUniqueName5 = Interop.sln
+		SccProjectName5 = Interop.Core.Tests
+		SccLocalPath5 = Interop.Core.Tests
+		SccProjectUniqueName6 = Interop.Core.Tests\\Interop.Core.Tests.SL5.csproj
+		SccProjectTopLevelParentUniqueName6 = Interop.sln
+		SccProjectName6 = Interop.Core.Tests
+		SccLocalPath6 = Interop.Core.Tests
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Analysis|Any CPU = Analysis|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{39D9023D-9B50-457F-A302-380A4D318318}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{39D9023D-9B50-457F-A302-380A4D318318}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{39D9023D-9B50-457F-A302-380A4D318318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39D9023D-9B50-457F-A302-380A4D318318}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39D9023D-9B50-457F-A302-380A4D318318}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39D9023D-9B50-457F-A302-380A4D318318}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ACF616F-A062-4E6F-93D9-89E2DB5DCB34}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{8ACF616F-A062-4E6F-93D9-89E2DB5DCB34}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{8ACF616F-A062-4E6F-93D9-89E2DB5DCB34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ACF616F-A062-4E6F-93D9-89E2DB5DCB34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ACF616F-A062-4E6F-93D9-89E2DB5DCB34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ACF616F-A062-4E6F-93D9-89E2DB5DCB34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDD0AC81-0842-4395-BF0A-E4E0B02CFAF7}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{DDD0AC81-0842-4395-BF0A-E4E0B02CFAF7}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{DDD0AC81-0842-4395-BF0A-E4E0B02CFAF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDD0AC81-0842-4395-BF0A-E4E0B02CFAF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDD0AC81-0842-4395-BF0A-E4E0B02CFAF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDD0AC81-0842-4395-BF0A-E4E0B02CFAF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C9D482B-7812-4589-BF29-10CBFFEB4FB2}.Analysis|Any CPU.ActiveCfg = Release|Any CPU
+		{9C9D482B-7812-4589-BF29-10CBFFEB4FB2}.Analysis|Any CPU.Build.0 = Release|Any CPU
+		{9C9D482B-7812-4589-BF29-10CBFFEB4FB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C9D482B-7812-4589-BF29-10CBFFEB4FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C9D482B-7812-4589-BF29-10CBFFEB4FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C9D482B-7812-4589-BF29-10CBFFEB4FB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Analysis|Any CPU.ActiveCfg = Release|Any CPU
+		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Analysis|Any CPU.Build.0 = Release|Any CPU
+		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6444F11-AF05-46C5-9E6D-9F0BA90EA56A}.Analysis|Any CPU.ActiveCfg = Release|Any CPU
+		{B6444F11-AF05-46C5-9E6D-9F0BA90EA56A}.Analysis|Any CPU.Build.0 = Release|Any CPU
+		{B6444F11-AF05-46C5-9E6D-9F0BA90EA56A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6444F11-AF05-46C5-9E6D-9F0BA90EA56A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6444F11-AF05-46C5-9E6D-9F0BA90EA56A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6444F11-AF05-46C5-9E6D-9F0BA90EA56A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{39D9023D-9B50-457F-A302-380A4D318318} = {1589CDD7-F787-4E7B-9A05-B6BE764BAA99}
+		{8ACF616F-A062-4E6F-93D9-89E2DB5DCB34} = {1589CDD7-F787-4E7B-9A05-B6BE764BAA99}
+		{DDD0AC81-0842-4395-BF0A-E4E0B02CFAF7} = {1589CDD7-F787-4E7B-9A05-B6BE764BAA99}
+		{9C9D482B-7812-4589-BF29-10CBFFEB4FB2} = {46275726-68BB-4995-80B9-397E1C068881}
+		{8C41A241-6CB9-4017-976E-147EE6FFA6E7} = {46275726-68BB-4995-80B9-397E1C068881}
+		{B6444F11-AF05-46C5-9E6D-9F0BA90EA56A} = {46275726-68BB-4995-80B9-397E1C068881}
+	EndGlobalSection
+EndGlobal
