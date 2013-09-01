@@ -13,7 +13,7 @@ using System.Security;
 #if !SILVERLIGHT
 [assembly: SecurityRules(SecurityRuleSet.Level2)]
 #endif
-[assembly: AllowPartiallyTrustedCallers]
+//[assembly: AllowPartiallyTrustedCallers]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

@@ -91,11 +91,11 @@ namespace Interop.Core.GarbageCollection
         [SecuritySafeCritical]
         public static bool operator ==(WeakReference<T> first, WeakReference<T> second)
         {
-            if (first == null && second == null)
+            if (Equals(first, null) && Equals(second, null))
             {
                 return true;
             }
-            if (first == null || second == null)
+            if (Equals(first, null) || Equals(second, null))
             {
                 return false;
             }

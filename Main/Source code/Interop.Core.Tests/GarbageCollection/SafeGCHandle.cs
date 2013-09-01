@@ -2,7 +2,6 @@
 using System.Reflection;
 #endif
 using System.Runtime.InteropServices;
-using System.Security;
 
 using Interop.Core.GarbageCollection;
 
@@ -11,7 +10,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Interop.Core.Tests.GarbageCollection
 {
     [TestClass]
-    [SecurityCritical]
     public class SafeGCHandleTests
     {
 #if NETFX
@@ -36,10 +34,9 @@ namespace Interop.Core.Tests.GarbageCollection
         public void IsTargetWork()
         {
             var testObject = new object();
-            using (var safeGCHandle = new SafeGCHandle(testObject, GCHandleType.Normal))
-            {
-                Assert.AreEqual(testObject, safeGCHandle.Target);
-            }
+            var safeGCHandle = new SafeGCHandle(testObject, GCHandleType.Normal);
+            Assert.AreEqual(testObject, safeGCHandle.Target);
+            safeGCHandle.Dispose();
         }
 
 #if NETFX
@@ -115,7 +112,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(equals.IsSecuritySafeCritical);
         }
 
-
         [TestMethod]
         public void GetHashCodeSecurity()
         {
@@ -123,7 +119,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(getHashCode.IsSecurityCritical);
             Assert.IsTrue(getHashCode.IsSecuritySafeCritical);
         }
-
 
         [TestMethod]
         public void ReleaseHandleSecurity()
