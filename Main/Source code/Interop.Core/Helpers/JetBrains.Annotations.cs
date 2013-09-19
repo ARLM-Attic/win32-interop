@@ -56,11 +56,12 @@ namespace JetBrains.Annotations
     [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public sealed class StringFormatMethodAttribute : Attribute
     {
-        public StringFormatMethodAttribute(string formatParameterName)
+        public StringFormatMethodAttribute([NotNull] string formatParameterName)
         {
             FormatParameterName = formatParameterName;
         }
 
+        [NotNull]
         public string FormatParameterName { get; private set; }
     }
 
@@ -123,11 +124,12 @@ namespace JetBrains.Annotations
         {
         }
 
-        public NotifyPropertyChangedInvocatorAttribute(string parameterName)
+        public NotifyPropertyChangedInvocatorAttribute([NotNull] string parameterName)
         {
             ParameterName = parameterName;
         }
 
+        [NotNull]
         public string ParameterName { get; private set; }
     }
 
@@ -187,6 +189,7 @@ namespace JetBrains.Annotations
             ForceFullStates = forceFullStates;
         }
 
+        [NotNull]
         public string Contract { get; private set; }
 
         public bool ForceFullStates { get; private set; }
@@ -338,6 +341,7 @@ namespace JetBrains.Annotations
     [Flags]
     public enum ImplicitUseKindFlags
     {
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:EnumerationItemsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         Default = Access | Assign | InstantiatedWithFixedConstructorSignature,
 
         /// <summary>Only entity marked with attribute considered used</summary>
@@ -364,8 +368,10 @@ namespace JetBrains.Annotations
     [Flags]
     public enum ImplicitUseTargetFlags
     {
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:EnumerationItemsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         Default = Itself,
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1602:EnumerationItemsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
         Itself = 1,
 
         /// <summary>Members of entity marked with attribute are considered used</summary>
@@ -436,7 +442,7 @@ namespace JetBrains.Annotations
         {
         }
 
-        public PathReferenceAttribute([PathReference] string basePath)
+        public PathReferenceAttribute([PathReference] [NotNull] string basePath)
         {
             BasePath = basePath;
         }

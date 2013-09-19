@@ -165,7 +165,10 @@
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
-    <CodeContractsAnalysisWarningLevel>2</CodeContractsAnalysisWarningLevel>
+    <CodeContractsAnalysisWarningLevel>3</CodeContractsAnalysisWarningLevel>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsSQLServerOption />
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -182,10 +185,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GarbageCollection\IWeakCollection.cs" />
-    <Compile Include="GarbageCollection\IWeakDictionary.cs" />
-    <Compile Include="GarbageCollection\IWeakEnumerable.cs" />
-    <Compile Include="GarbageCollection\IWeakList.cs" />
-    <Compile Include="GarbageCollection\IWeakSet.cs" />
     <Compile Include="GarbageCollection\SafeGCHandle.cs" />
     <Compile Include="GarbageCollection\WeakReference.cs" />
     <Compile Include="GlobalSuppressions.cs" />

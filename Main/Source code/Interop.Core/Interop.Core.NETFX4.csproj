@@ -164,12 +164,15 @@
     <CodeContractsLibPaths />
     <CodeContractsExtraRewriteOptions />
     <CodeContractsExtraAnalysisOptions>-outputwarnmasks -maxWarnings 2147483647</CodeContractsExtraAnalysisOptions>
-    <CodeContractsBaseLineFile />
+    <CodeContractsBaseLineFile>..\..\baseline.xml</CodeContractsBaseLineFile>
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
-    <CodeContractsAnalysisWarningLevel>2</CodeContractsAnalysisWarningLevel>
+    <CodeContractsAnalysisWarningLevel>3</CodeContractsAnalysisWarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsSQLServerOption />
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -186,15 +189,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GarbageCollection\IWeakCollection.cs" />
-    <Compile Include="GarbageCollection\IWeakDictionary.cs" />
-    <Compile Include="GarbageCollection\IWeakEnumerable.cs" />
-    <Compile Include="GarbageCollection\IWeakList.cs" />
-    <Compile Include="GarbageCollection\IWeakSet.cs" />
+    <Compile Include="GarbageCollection\IWeakCollectionOfT.cs" />
+    <Compile Include="GarbageCollection\IWeakReferencesList.cs" />
+    <Compile Include="GarbageCollection\IWeakReferencesListOfT.cs" />
     <Compile Include="GarbageCollection\SafeGCHandle.cs" />
+    <Compile Include="GarbageCollection\WeakExtensions.cs" />
     <Compile Include="GarbageCollection\WeakReference.cs" />
+    <Compile Include="GarbageCollection\WeakReferencesListContracts.cs" />
+    <Compile Include="GarbageCollection\WeakReferencesListOfTContracts.cs" />
+    <Compile Include="GarbageCollection\WeakReferencesStorage.cs" />
+    <Compile Include="GarbageCollection\WeakStorage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Helpers\CodeAnalysisExtensions.cs" />
+    <Compile Include="Helpers\ComparableHelper.cs" />
+    <Compile Include="Helpers\ContractExtensions.cs" />
     <Compile Include="Helpers\ErrorHelper.cs" />
     <Compile Include="Helpers\JetBrains.Annotations.cs" />
+    <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="NativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Window.cs" />

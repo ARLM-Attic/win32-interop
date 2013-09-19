@@ -6,6 +6,7 @@ namespace Interop.Core
     public static partial class NativeMethods
     {
 // ReSharper disable InconsistentNaming
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.SysInt)]
         public delegate IntPtr WndProc(IntPtr hwnd, [MarshalAs(UnmanagedType.U4)] WindowMessage Msg, [MarshalAs(UnmanagedType.SysUInt)] IntPtr wParam, [MarshalAs(UnmanagedType.SysInt)] IntPtr lParam);
 

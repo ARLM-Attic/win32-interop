@@ -1,23 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+
+using JetBrains.Annotations;
 
 namespace Interop.Core.GarbageCollection
 {
-    public interface IWeakCollection<T> : ICollection<T>, IWeakEnumerable<T>
-        where T : class
+    public interface IWeakCollection : ICollection, IDisposable
     {
-        IEnumerable<WeakReference<T>> References { get; }
+        void Add([CanBeNull] object item);
 
-        IEnumerable<WeakReference<T>> Live { get; }
+        void Clear();
 
-        int ReferenceCount { get; }
+        bool Contains([CanBeNull] object item);
 
-        void AddReference(WeakReference<T> reference);
-
-        bool ContainsReference(WeakReference<T> reference);
-
-        void CopyReferencesTo(WeakReference<T>[] array, int arrayIndex);
-
-        bool RemoveReference(WeakReference<T> item);
+        void Remove([CanBeNull] object item);
 
         void Purge();
     }

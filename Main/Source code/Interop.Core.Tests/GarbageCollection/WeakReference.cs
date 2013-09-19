@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 using Interop.Core.GarbageCollection;
 
@@ -14,25 +13,55 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void TypeSecurity()
         {
-            var weakReference = typeof(WeakReference<>);
-            Assert.IsTrue(weakReference.IsSecurityTransparent);
+            var member = typeof(WeakReference<>);
+            Assert.IsTrue(member.IsSecurityTransparent);
         }
 
         [TestMethod]
         public void SafeHandleSecurity()
         {
-            var safeHandle = typeof(WeakReference<>).GetField("_safeHandle", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.IsTrue(safeHandle.IsSecurityCritical);
-            Assert.IsFalse(safeHandle.IsSecuritySafeCritical);
+            var member = typeof(WeakReference<>).GetField("_safeHandle", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (member != null)
+            {
+                Assert.IsTrue(member.IsSecurityCritical);
+                Assert.IsFalse(member.IsSecuritySafeCritical);
+            }
+            else
+            {
+                Assert.Fail("Field _safeHandle in type" + typeof(WeakReference<>).Name + " not found!");
+            }
         }
 
         [TestMethod]
         public void ConstructorSecurity()
         {
             var weakReference = typeof(WeakReference<>);
-            var constructor = weakReference.GetConstructor(weakReference.GetGenericArguments());
-            Assert.IsTrue(constructor.IsSecurityCritical);
-            Assert.IsTrue(constructor.IsSecuritySafeCritical);
+            var member = weakReference.GetConstructor(weakReference.GetGenericArguments());
+            if (member != null)
+            {
+                Assert.IsTrue(member.IsSecurityCritical);
+                Assert.IsTrue(member.IsSecuritySafeCritical);
+            }
+            else
+            {
+                Assert.Fail("Constructor of type " + typeof(WeakReference<>).Name + " with signature .ctor(`0) not found!");
+            }
+        }
+
+        [TestMethod]
+        public void ConstructorWithResurreptionSecurity()
+        {
+            var weakReference = typeof(WeakReference<>);
+            var member = weakReference.GetConstructor(new[] { weakReference.GetGenericArguments()[0], typeof(bool) });
+            if (member != null)
+            {
+                Assert.IsTrue(member.IsSecurityCritical);
+                Assert.IsTrue(member.IsSecuritySafeCritical);
+            }
+            else
+            {
+                Assert.Fail("Constructor of type " + typeof(WeakReference<>).Name + " with signature .ctor(`0, System.Boolean) not found!");
+            }
         }
 #endif
 
@@ -42,7 +71,7 @@ namespace Interop.Core.Tests.GarbageCollection
             var testObject = new object();
             var weakReference = new WeakReference<object>(testObject);
             Assert.AreEqual(testObject, weakReference.Target);
-            GC.KeepAlive(testObject);
+            System.GC.KeepAlive(testObject);
             weakReference.Dispose();
         }
 
@@ -52,12 +81,48 @@ namespace Interop.Core.Tests.GarbageCollection
             var testObject = new object();
             var weakReference = new WeakReference<object>(testObject);
             Assert.AreEqual(testObject, weakReference.Target);
-            GC.KeepAlive(testObject);
+            System.GC.KeepAlive(testObject);
 // ReSharper disable once RedundantAssignment
             testObject = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
+            Assert.IsNull(weakReference.Target);
+            weakReference.Dispose();
+        }
+
+        [TestMethod]
+        public void IsTargetResurrected()
+        {
+            var testObject = new ResurrectingObject();
+            var weakReference = new WeakReference<ResurrectingObject>(testObject, true);
+            Assert.AreEqual(testObject, weakReference.Target);
+            System.GC.KeepAlive(testObject);
+// ReSharper disable once RedundantAssignment
+            testObject = null;
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
+            Assert.IsNotNull(weakReference.Target);
+            weakReference.Dispose();
+        }
+
+        [TestMethod]
+        public void IsTargetCompletelyDead()
+        {
+            var testObject = new ResurrectingObject();
+            var weakReference = new WeakReference<ResurrectingObject>(testObject, true);
+            Assert.AreEqual(testObject, weakReference.Target);
+            System.GC.KeepAlive(testObject);
+// ReSharper disable once RedundantAssignment
+            testObject = null;
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
+            Assert.IsNotNull(weakReference.Target);
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
             Assert.IsNull(weakReference.Target);
             weakReference.Dispose();
         }
@@ -66,9 +131,9 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void TargetSecurity()
         {
-            var target = typeof(WeakReference<>).GetMethod("get_Target");
-            Assert.IsTrue(target.IsSecurityCritical);
-            Assert.IsTrue(target.IsSecuritySafeCritical);
+            var member = typeof(WeakReference<>).GetMethod("get_Target");
+            Assert.IsTrue(member.IsSecurityCritical);
+            Assert.IsTrue(member.IsSecuritySafeCritical);
         }
 #endif
 
@@ -78,7 +143,7 @@ namespace Interop.Core.Tests.GarbageCollection
             var testObject = new object();
             var weakReference = new WeakReference<object>(testObject);
             Assert.IsTrue(weakReference.IsAlive);
-            GC.KeepAlive(testObject);
+            System.GC.KeepAlive(testObject);
             weakReference.Dispose();
         }
 
@@ -88,14 +153,49 @@ namespace Interop.Core.Tests.GarbageCollection
             var testObject = new object();
             var weakReference = new WeakReference<object>(testObject);
             Assert.IsTrue(weakReference.IsAlive);
-            GC.KeepAlive(testObject);
-            // ReSharper disable once RedundantAssignment
+            System.GC.KeepAlive(testObject);
+// ReSharper disable once RedundantAssignment
             testObject = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
             Assert.IsFalse(weakReference.IsAlive);
-// ReSharper disable once HeuristicUnreachableCode
+            weakReference.Dispose();
+        }
+
+        [TestMethod]
+        public void IsResurrected()
+        {
+            var testObject = new ResurrectingObject();
+            var weakReference = new WeakReference<ResurrectingObject>(testObject, true);
+            Assert.IsTrue(weakReference.IsAlive);
+            System.GC.KeepAlive(testObject);
+// ReSharper disable once RedundantAssignment
+            testObject = null;
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
+            Assert.IsTrue(weakReference.IsAlive);
+            weakReference.Dispose();
+        }
+
+        [TestMethod]
+        public void IsCompletelyDead()
+        {
+            var testObject = new ResurrectingObject();
+            var weakReference = new WeakReference<ResurrectingObject>(testObject, true);
+            Assert.IsTrue(weakReference.IsAlive);
+            System.GC.KeepAlive(testObject);
+// ReSharper disable once RedundantAssignment
+            testObject = null;
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
+            Assert.IsTrue(weakReference.IsAlive);
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
+            Assert.IsFalse(weakReference.IsAlive);
             weakReference.Dispose();
         }
 
@@ -103,9 +203,9 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsAliveSecurity()
         {
-            var isAlive = typeof(WeakReference<>).GetMethod("get_IsAlive");
-            Assert.IsTrue(isAlive.IsSecurityCritical);
-            Assert.IsTrue(isAlive.IsSecuritySafeCritical);
+            var member = typeof(WeakReference<>).GetMethod("get_IsAlive");
+            Assert.IsTrue(member.IsSecurityCritical);
+            Assert.IsTrue(member.IsSecuritySafeCritical);
         }
 #endif
 
@@ -131,55 +231,90 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void OpEqualitySecurity()
         {
-            var opEquality = typeof(WeakReference<>).GetMethod("op_Equality");
-            Assert.IsTrue(opEquality.IsSecurityCritical);
-            Assert.IsTrue(opEquality.IsSecuritySafeCritical);
+            var member = typeof(WeakReference<>).GetMethod("op_Equality");
+            Assert.IsTrue(member.IsSecurityCritical);
+            Assert.IsTrue(member.IsSecuritySafeCritical);
         }
 
         [TestMethod]
         public void OpInequalitySecurity()
         {
-            var opInequality = typeof(WeakReference<>).GetMethod("op_Inequality");
-            Assert.IsTrue(opInequality.IsSecurityCritical);
-            Assert.IsTrue(opInequality.IsSecuritySafeCritical);
+            var member = typeof(WeakReference<>).GetMethod("op_Inequality");
+            Assert.IsTrue(member.IsSecurityCritical);
+            Assert.IsTrue(member.IsSecuritySafeCritical);
         }
 #endif
 
         [TestMethod]
         public void IsEqualsWork()
         {
-            // ReSharper disable EqualExpressionComparison
+// ReSharper disable EqualExpressionComparison
             var testObject = new object();
             var weakReference = new WeakReference<object>(testObject);
             Assert.IsTrue(weakReference.Equals(weakReference));
             Assert.IsFalse(weakReference.Equals(null));
             weakReference.Dispose();
-            // ReSharper restore EqualExpressionComparison
+// ReSharper restore EqualExpressionComparison
         }
 
 #if NETFX
         [TestMethod]
+        public void EqualsStaticSecurity()
+        {
+            var member = typeof(WeakReference<>).GetMethod("Equals", BindingFlags.Static | BindingFlags.Public);
+            Assert.IsTrue(member.IsSecurityCritical);
+            Assert.IsTrue(member.IsSecuritySafeCritical);
+        }
+
+        [TestMethod]
         public void EqualsSecurity()
         {
-            var equals = typeof(WeakReference<>).GetMethod("Equals", BindingFlags.Instance | BindingFlags.Public);
-            Assert.IsTrue(equals.IsSecurityCritical);
-            Assert.IsTrue(equals.IsSecuritySafeCritical);
+            var member = typeof(WeakReference<>).GetMethod("Equals", BindingFlags.Instance | BindingFlags.Public);
+            Assert.IsTrue(member.IsSecurityCritical);
+            Assert.IsTrue(member.IsSecuritySafeCritical);
         }
 
         [TestMethod]
         public void GetHashCodeSecurity()
         {
-            var getHashCode = typeof(WeakReference<>).GetMethod("GetHashCode");
-            Assert.IsTrue(getHashCode.IsSecurityCritical);
-            Assert.IsTrue(getHashCode.IsSecuritySafeCritical);
+            var member = typeof(WeakReference<>).GetMethod("GetHashCode");
+            Assert.IsTrue(member.IsSecurityCritical);
+            Assert.IsTrue(member.IsSecuritySafeCritical);
+        }
+#endif
+
+        [TestMethod]
+        public void ToStringTest()
+        {
+// ReSharper disable once ConvertToConstant.Local
+            var testObject = "Test string";
+            var weakReference = new WeakReference<string>(testObject);
+            Assert.AreEqual(weakReference.ToString(), "String: Test string");
+            weakReference.Dispose();
+        }
+
+        [TestMethod]
+        public void NullToStringTest()
+        {
+            var weakReference = new WeakReference<object>(null);
+            Assert.AreEqual(weakReference.ToString(), "Object: <null>");
+            weakReference.Dispose();
+        }
+
+#if NETFX
+        [TestMethod]
+        public void ToStringSecurity()
+        {
+            var member = typeof(WeakReference<>).GetMethod("ToString");
+            Assert.IsTrue(member.IsSecurityTransparent);
         }
 
         [TestMethod]
         public void DisposeSecurity()
         {
-            var getHashCode = typeof(WeakReference<>).GetMethod("Dispose");
-            Assert.IsTrue(getHashCode.IsSecurityCritical);
-            Assert.IsTrue(getHashCode.IsSecuritySafeCritical);
+            var member = typeof(WeakReference<>).GetMethod("Dispose");
+            Assert.IsTrue(member.IsSecurityCritical);
+            Assert.IsTrue(member.IsSecuritySafeCritical);
         }
 #endif
     }

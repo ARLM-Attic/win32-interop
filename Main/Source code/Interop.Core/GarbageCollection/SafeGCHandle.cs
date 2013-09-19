@@ -13,12 +13,16 @@
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 #if !SILVERLIGHT
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 #endif
 using System.Runtime.InteropServices;
 using System.Security;
+
+using JetBrains.Annotations;
 
 namespace Interop.Core.GarbageCollection
 {
@@ -32,7 +36,7 @@ namespace Interop.Core.GarbageCollection
     /// </para>
     /// </remarks>
     [SecurityCritical]
-    public sealed class SafeGCHandle : SafeHandle
+    public class SafeGCHandle : SafeHandle
     {
         #region Constructors
 
@@ -41,7 +45,7 @@ namespace Interop.Core.GarbageCollection
         /// </summary>
         /// <param name="target">The object to reference.</param>
         /// <param name="type">The way to reference the object.</param>
-        public SafeGCHandle(object target, GCHandleType type)
+        public SafeGCHandle([CanBeNull] object target, GCHandleType type)
             : base(IntPtr.Zero, true)
         {
 #if !SILVERLIGHT
@@ -66,9 +70,13 @@ namespace Interop.Core.GarbageCollection
         /// <summary>
         /// Gets the object this handle represents.
         /// </summary>
+        [CanBeNull]
         public object Target
         {
-            get { return ((GCHandle)handle).Target; }
+            get
+            {
+                return handle != IntPtr.Zero ? ((GCHandle)handle).Target : null;
+            }
         }
 
         /// <summary>
@@ -83,6 +91,7 @@ namespace Interop.Core.GarbageCollection
 #endif
             get
             {
+                Contract.Ensures(Contract.Result<bool>() == (handle == IntPtr.Zero));
                 return handle == IntPtr.Zero;
             }
         }
@@ -116,7 +125,7 @@ namespace Interop.Core.GarbageCollection
         }
 
         [SecuritySafeCritical]
-        public override bool Equals(object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             var other = obj as SafeGCHandle;
             if (other == null)
@@ -130,8 +139,25 @@ namespace Interop.Core.GarbageCollection
         public override int GetHashCode()
         {
             // handle is immutable
-// ReSharper disable once NonReadonlyFieldInGetHashCode
+// ReSharper disable NonReadonlyFieldInGetHashCode
+            Contract.Ensures(Contract.Result<int>() == handle.GetHashCode());
             return handle.GetHashCode();
+// ReSharper restore NonReadonlyFieldInGetHashCode
+        }
+
+        #endregion
+
+        #region Overrides of Object
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        [SecuritySafeCritical]
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1407:ArithmeticExpressionsMustDeclarePrecedence", Justification = "Reviewed. Suppression is OK here.")]
+        public override string ToString()
+        {
+            return IntPtr.Size == sizeof(int) ? "0x" + handle.ToInt32().ToString("X" + IntPtr.Size * 2) : "0x" + handle.ToInt64().ToString("X" + IntPtr.Size * 2);
         }
 
         #endregion
@@ -152,8 +178,9 @@ namespace Interop.Core.GarbageCollection
             if (handle != IntPtr.Zero)
             {
                 ((GCHandle)handle).Free();
+                return true;
             }
-            return true;
+            return false;
         }
 
         #endregion

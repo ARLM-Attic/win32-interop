@@ -13,6 +13,7 @@
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.Contracts;
 #if !SILVERLIGHT
 using System.Runtime.ConstrainedExecution;
 #endif
@@ -21,6 +22,8 @@ using System.Security;
 #if !SILVERLIGHT
 using System.Security.Permissions;
 #endif
+
+using JetBrains.Annotations;
 
 namespace Interop.Core.GarbageCollection
 {
@@ -37,7 +40,7 @@ namespace Interop.Core.GarbageCollection
 #if !SILVERLIGHT
     [SecurityPermission(SecurityAction.InheritanceDemand, UnmanagedCode = true)]
 #endif
-    public sealed class WeakReference<T> : IDisposable
+    public class WeakReference<T> : IDisposable
         where T : class
     {
         #region Private fields
@@ -52,14 +55,24 @@ namespace Interop.Core.GarbageCollection
 
         #region Constructors
 
+// ReSharper disable once IntroduceOptionalParameters.Global
+        [PublicAPI]
+        [SecuritySafeCritical]
+        public WeakReference([CanBeNull] T target) : this(target, false)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WeakReference{T}"/> class, referencing the specified object.
         /// </summary>
         /// <param name="target">The object to track. May not be null.</param>
+        /// <param name="isResurrectionSupported">True, if we must support object resurrection; otherwise, False.</param>
+        [PublicAPI]
         [SecuritySafeCritical]
-        public WeakReference(T target)
+        public WeakReference([CanBeNull] T target, bool isResurrectionSupported)
         {
-            _safeHandle = new SafeGCHandle(target, GCHandleType.Weak);
+            Contract.Ensures(_safeHandle != null);
+            _safeHandle = new SafeGCHandle(target, isResurrectionSupported ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }
 
         #endregion
@@ -69,10 +82,14 @@ namespace Interop.Core.GarbageCollection
         /// <summary>
         /// Gets the referenced object. Will return null if the object has been garbage collected.
         /// </summary>
+        [CanBeNull]
         public T Target
         {
             [SecuritySafeCritical]
-            get { return _safeHandle.Target as T; }
+            get
+            {
+                return _safeHandle.Target as T;
+            }
         }
 
         /// <summary>
@@ -81,7 +98,10 @@ namespace Interop.Core.GarbageCollection
         public bool IsAlive
         {
             [SecuritySafeCritical]
-            get { return !_safeHandle.IsInvalid && _safeHandle.Target != null; }
+            get
+            {
+                return !_safeHandle.IsInvalid && _safeHandle.Target != null;
+            }
         }
 
         #endregion
@@ -91,11 +111,23 @@ namespace Interop.Core.GarbageCollection
         [SecuritySafeCritical]
         public static bool operator ==(WeakReference<T> first, WeakReference<T> second)
         {
-            if (Equals(first, null) && Equals(second, null))
+            return Equals(first, second);
+        }
+
+        [SecuritySafeCritical]
+        public static bool operator !=(WeakReference<T> first, WeakReference<T> second)
+        {
+            return !Equals(first, second);
+        }
+
+        [SecuritySafeCritical]
+        public static bool Equals([CanBeNull] WeakReference<T> first, [CanBeNull] WeakReference<T> second)
+        {
+            if (object.Equals(first, null) && object.Equals(second, null))
             {
                 return true;
             }
-            if (Equals(first, null) || Equals(second, null))
+            if (object.Equals(first, null) || object.Equals(second, null))
             {
                 return false;
             }
@@ -103,13 +135,7 @@ namespace Interop.Core.GarbageCollection
         }
 
         [SecuritySafeCritical]
-        public static bool operator !=(WeakReference<T> first, WeakReference<T> second)
-        {
-            return !(first == second);
-        }
-
-        [SecuritySafeCritical]
-        public override bool Equals(object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             var other = obj as WeakReference<T>;
             if (other == null)
@@ -122,7 +148,26 @@ namespace Interop.Core.GarbageCollection
         [SecuritySafeCritical]
         public override int GetHashCode()
         {
+            Contract.Ensures(Contract.Result<int>() == _safeHandle.GetHashCode());
             return _safeHandle.GetHashCode();
+        }
+
+        #endregion
+
+        #region Overrides of Object
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        public override string ToString()
+        {
+            var target = Target;
+            if (target == null)
+            {
+                return typeof(T).Name + ": <null>";
+            }
+            return typeof(T).Name + ": " + target;
         }
 
         #endregion

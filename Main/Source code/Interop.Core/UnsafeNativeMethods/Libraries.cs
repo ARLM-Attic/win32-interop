@@ -19,10 +19,10 @@ namespace Interop.Core
             ThrowOnUnmappableChar = true,
 #endif
             SetLastError = true)]
-        public static extern IntPtr GetModuleHandle(string lpModuleName);
+        public static extern IntPtr GetModuleHandle([MarshalAs(UnmanagedType.LPWStr)] string lpModuleName);
 
         [DllImport(NativeMethods.ExternDll.Kernel32, ExactSpelling = true, CharSet = CharSet.Ansi, BestFitMapping = false, SetLastError = true)]
-        public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+        public static extern IntPtr GetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
 
         [DllImport(NativeMethods.ExternDll.User32, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.SysInt)]
