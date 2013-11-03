@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Interop.Core.Tests.GarbageCollection
+namespace Interop.Core.Tests.GarbageCollection.Helpers
 {
     public class ResurrectingObject
     {

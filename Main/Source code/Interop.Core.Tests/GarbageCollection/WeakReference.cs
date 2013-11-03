@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 using Interop.Core.GarbageCollection;
+using Interop.Core.Tests.GarbageCollection.Helpers;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -289,7 +290,7 @@ namespace Interop.Core.Tests.GarbageCollection
 // ReSharper disable once ConvertToConstant.Local
             var testObject = "Test string";
             var weakReference = new WeakReference<string>(testObject);
-            Assert.AreEqual(weakReference.ToString(), "String: Test string");
+            Assert.AreEqual("String: Test string", weakReference.ToString());
             weakReference.Dispose();
         }
 
@@ -297,7 +298,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void NullToStringTest()
         {
             var weakReference = new WeakReference<object>(null);
-            Assert.AreEqual(weakReference.ToString(), "Object: <null>");
+            Assert.AreEqual("Object: <null>", weakReference.ToString());
             weakReference.Dispose();
         }
 

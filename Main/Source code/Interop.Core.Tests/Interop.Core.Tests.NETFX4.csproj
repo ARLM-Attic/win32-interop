@@ -83,9 +83,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GarbageCollection\ResurrectingObject.cs" />
+    <Compile Include="GarbageCollection\Helpers\EnumerableExtensions.cs" />
+    <Compile Include="GarbageCollection\Helpers\LinkedObject.cs" />
+    <Compile Include="GarbageCollection\Helpers\LinkedObjectExtensions.cs" />
+    <Compile Include="GarbageCollection\Helpers\ResurrectingObject.cs" />
     <Compile Include="GarbageCollection\SafeGCHandle.cs" />
     <Compile Include="GarbageCollection\WeakReference.cs" />
+    <Compile Include="GarbageCollection\WeakReferencesStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

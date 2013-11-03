@@ -3,27 +3,16 @@ using System.Collections;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-using Interop.Core.Helpers;
-
 namespace Interop.Core.GarbageCollection
 {
     [ContractClassFor(typeof(IWeakReferencesList))]
-    public sealed class WeakReferencesListContracts : IWeakReferencesList
+    internal abstract class WeakReferencesListContracts : IWeakReferencesList
     {
-// ReSharper disable ValueParameterNotUsed
 // ReSharper disable CodeAnnotationAnalyzer
         public object this[int index]
         {
-            get
-            {
-                ValidationHelper.InOpenInterval(index, "index", 0, Count);
-                return default(object);
-            }
-
-            set
-            {
-                ValidationHelper.InOpenInterval(index, "index", 0, Count);
-            }
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public int Alive
@@ -38,83 +27,65 @@ namespace Interop.Core.GarbageCollection
 
         public int Count
         {
-            [Pure]
             get
             {
-                Contract.Ensures(Contract.Result<int>() >= 0);
-                return default(int);
+                throw new NotImplementedException();
             }
         }
 
         public bool IsReadOnly
         {
-            get { return default(bool); }
+            get { throw new NotImplementedException(); }
         }
 
         public bool IsFixedSize
         {
-            get { return default(bool); }
+            get { throw new NotImplementedException(); }
         }
 
         public bool IsSynchronized
         {
-            [Pure]
-            get
-            {
-                Contract.Ensures(Contract.Result<bool>());
-                return true;
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public object SyncRoot
         {
-            [Pure]
-            get
-            {
-// ReSharper disable once AssignNullToNotNullAttribute
-                return default(object);
-            }
+            get { throw new NotImplementedException(); }
         }
 
         public int Add(object weakReference)
         {
-            Contract.Ensures(Count == Contract.OldValue(Count) + 1);
-            return default(int);
+            throw new NotImplementedException();
         }
 
         public void Insert(int index, object weakReference)
         {
-            ValidationHelper.InOpenInterval(index, "index", 0, Count);
-            Contract.Ensures(Count == Contract.OldValue(Count) + 1);
+            throw new NotImplementedException();
         }
 
-        [Pure]
         public bool Contains(object weakReference)
         {
-            return default(bool);
+            throw new NotImplementedException();
         }
 
-        [Pure]
         public int IndexOf(object weakReference)
         {
-            Contract.Ensures(Contract.Result<int>() >= -1);
-            Contract.Ensures(Contract.Result<int>() < Count);
-            return default(int);
+            throw new NotImplementedException();
         }
 
         public void Remove(object weakReference)
         {
+            throw new NotImplementedException();
         }
 
         public void RemoveAt(int index)
         {
-            ValidationHelper.InHalfClosedInterval(index, "index", 0, Count);
-            Contract.Ensures(Count == Contract.OldValue(Count) - 1);
+            throw new NotImplementedException();
         }
 
         public void Clear()
         {
-            Contract.Ensures(Count == 0);
+            throw new NotImplementedException();
         }
 
         public IEnumerable Purge()
@@ -125,17 +96,14 @@ namespace Interop.Core.GarbageCollection
 
         public void CopyTo(Array array, int index)
         {
-            ValidationHelper.NotNull(array, "array");
-            ValidationHelper.NotMultidimensional(array, "array");
+            throw new NotImplementedException();
         }
 
-        [Pure]
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Enumerable.Empty<object>().GetEnumerator();
+            throw new NotImplementedException();
         }
 
 // ReSharper restore CodeAnnotationAnalyzer
-// ReSharper restore ValueParameterNotUsed
     }
 }

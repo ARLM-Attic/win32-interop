@@ -193,7 +193,6 @@
     <Compile Include="GarbageCollection\IWeakReferencesList.cs" />
     <Compile Include="GarbageCollection\IWeakReferencesListOfT.cs" />
     <Compile Include="GarbageCollection\SafeGCHandle.cs" />
-    <Compile Include="GarbageCollection\WeakExtensions.cs" />
     <Compile Include="GarbageCollection\WeakReference.cs" />
     <Compile Include="GarbageCollection\WeakReferencesListContracts.cs" />
     <Compile Include="GarbageCollection\WeakReferencesListOfTContracts.cs" />

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 using Interop.Core.Helpers;
 
@@ -46,47 +47,11 @@ namespace Interop.Core.GarbageCollection
 
         public WeakReferencesStorage([CanBeNull] IEnumerable<WeakReference<T>> enumerable)
         {
-// ReSharper disable once PossibleMultipleEnumeration
+// ReSharper disable PossibleMultipleEnumeration
             ValidationHelper.NotNull(enumerable, "enumerable");
-
-            var collection = enumerable as ICollection<WeakReference<T>>;
-            if (collection != null)
-            {
-                if (collection.Count == 0)
-                {
-                    _weakReferences = _emptyWeakReferences;
-                }
-                else
-                {
-                    _weakReferences = new WeakReference<T>[collection.Count];
-                    collection.CopyTo(_weakReferences, 0);
-                    _count = collection.Count;
-                }
-            }
-            else
-            {
-                _weakReferences = _emptyWeakReferences;
-                _count = 0;
-
-// ReSharper disable once PossibleMultipleEnumeration
-                using (var enumerator = enumerable.GetEnumerator())
-                {
-                    while (enumerator.MoveNext())
-                    {
-                        _count++;
-                    }
-                    if (_count > 0)
-                    {
-                        enumerator.Reset();
-                        _weakReferences = new WeakReference<T>[_count];
-                        for (var index = 0; index < _count; index++)
-                        {
-                            enumerator.MoveNext();
-                            _weakReferences[index] = enumerator.Current;
-                        }
-                    }
-                }
-            }
+            _weakReferences = enumerable.ToArray();
+            _count = _weakReferences.Length;
+// ReSharper restore PossibleMultipleEnumeration
             SyncRoot = new object();
         }
 
@@ -99,7 +64,7 @@ namespace Interop.Core.GarbageCollection
         {
             get
             {
-                ValidationHelper.InOpenInterval(index, "index", 0, _count);
+                ValidationHelper.InHalfClosedInterval(index, "index", 0, _count);
                 lock (SyncRoot)
                 {
                     return GetItem(index);
@@ -108,7 +73,7 @@ namespace Interop.Core.GarbageCollection
 
             set
             {
-                ValidationHelper.InOpenInterval(index, "index", 0, _count);
+                ValidationHelper.InHalfClosedInterval(index, "index", 0, _count);
                 ValidationHelper.OfType<WeakReference<T>>(value, "value");
                 Contract.Ensures(Version == Contract.OldValue(Version) + 1);
                 lock (SyncRoot)
@@ -123,7 +88,7 @@ namespace Interop.Core.GarbageCollection
         {
             get
             {
-                ValidationHelper.InOpenInterval(index, "index", 0, _count);
+                ValidationHelper.InHalfClosedInterval(index, "index", 0, _count);
                 lock (SyncRoot)
                 {
                     return GetItem(index);
@@ -132,7 +97,7 @@ namespace Interop.Core.GarbageCollection
 
             set
             {
-                ValidationHelper.InOpenInterval(index, "index", 0, _count);
+                ValidationHelper.InHalfClosedInterval(index, "index", 0, _count);
                 Contract.Ensures(Version == Contract.OldValue(Version) + 1);
                 lock (SyncRoot)
                 {
@@ -294,7 +259,7 @@ namespace Interop.Core.GarbageCollection
         {
             Contract.Ensures(Count == Contract.OldValue(Count) + 1);
             Contract.Ensures(Version == Contract.OldValue(Version) + 1);
-            Resize(_count + 1);
+            Resize(_count, 1);
             _weakReferences[_count] = weakReference;
             _count++;
             _version++;
@@ -328,7 +293,7 @@ namespace Interop.Core.GarbageCollection
             ValidationHelper.InOpenInterval(index, "index", 0, _count);
             Contract.Ensures(Count == Contract.OldValue(Count) + 1);
             Contract.Ensures(Version == Contract.OldValue(Version) + 1);
-            Resize(0, index, _count + 1, index, _count - index);
+            Resize(index, 1);
             _weakReferences[index] = weakReference;
             _count++;
             _version++;
@@ -418,7 +383,7 @@ namespace Interop.Core.GarbageCollection
             {
                 if (ValidationHelper.OfType<WeakReference<T>>(weakReference))
                 {
-                    Remove((WeakReference<T>)weakReference);
+                    RemoveImpl((WeakReference<T>)weakReference);
                 }
             }
         }
@@ -473,7 +438,7 @@ namespace Interop.Core.GarbageCollection
             ValidationHelper.InHalfClosedInterval(index, "index", 0, _count);
             Contract.Ensures(Count == Contract.OldValue(Count) - 1);
             Contract.Ensures(Version == Contract.OldValue(Version) + 1);
-            Resize(0, index, _count - 1, index + 1, _count - index);
+            Resize(index, -1);
             _count--;
             _version++;
         }
@@ -540,7 +505,7 @@ namespace Interop.Core.GarbageCollection
                     index++;
                 }
                 var count = lastIndex + 1;
-                Resize(count);
+                Resize(0, _count - count);
                 _count = count;
                 _version++;
             }
@@ -585,20 +550,18 @@ namespace Interop.Core.GarbageCollection
             Array.Copy(_weakReferences, 0, array, index, _count);
         }
 
-        private void Resize(int count)
-        {
-            var length = Math.Min(count, _count);
-            var oldWeakReferences = _weakReferences;
-            _weakReferences = new WeakReference<T>[count];
-            Array.Copy(oldWeakReferences, _weakReferences, length);
-        }
-
-        private void Resize(int startIndex, int startCount, int count, int endIndex, int endCount)
+        private void Resize(int index, int increment)
         {
             var oldWeakReferences = _weakReferences;
-            _weakReferences = new WeakReference<T>[startCount + count + endCount];
-            Array.Copy(oldWeakReferences, startIndex, _weakReferences, startIndex + startCount, startCount);
-            Array.Copy(oldWeakReferences, endIndex, _weakReferences, endIndex + endCount, endCount);
+            _weakReferences = new WeakReference<T>[_count + increment];
+            if (index > 0)
+            {
+                Array.Copy(oldWeakReferences, 0, _weakReferences, 0, index);
+            }
+            if (index < _count)
+            {
+                Array.Copy(oldWeakReferences, increment >= 0 ? index : index - increment, _weakReferences, increment <= 0 ? index : index + increment, _count - (increment >= 0 ? index : index - increment));
+            }
         }
 
         #endregion
