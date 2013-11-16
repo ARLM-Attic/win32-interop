@@ -26,38 +26,40 @@ namespace Interop.Core.Tests.GarbageCollection
 
         private const int WeakReferencesCount = 3;
 
-        [NotNull]
-        private static object[] Enumerate()
-        {
-            return EnumerableExtensions.Enumerate(WeakReferencesCount, () => new object());
-        }
-
-        [NotNull]
-        private static T[] Enumerate<T>([NotNull] Func<T> initializer)
+        private static void Execute<T>([NotNull] Func<T> initializer, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, [CanBeNull] Action finalizer = null)
             where T : class
         {
-            return EnumerableExtensions.Enumerate(WeakReferencesCount, initializer);
-        }
-
-        private static void Execute<T>([NotNull] T[] items, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, [CanBeNull] Action finalizer = null)
-            where T : class
-        {
-            WeakExecute(items, storage =>
+            ExecuteHelper(() =>
             {
+                var items = EnumerableExtensions.Enumerate(WeakReferencesCount, initializer);
+                var weakReferences = EnumerableExtensions.WeakReferences(items);
+                var storage = EnumerableExtensions.WeakReferencesStorage(!fromCollection ? weakReferences : weakReferences.ToList());
                 body(storage);
                 GC.KeepAlive(items);
-            }, fromCollection, finalizer);
+                return storage;
+            }, finalizer);
         }
 
-        private static void WeakExecute<T>([NotNull] T[] items, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, [CanBeNull] Action finalizer = null)
+        private static void WeakExecute<T>([NotNull] Func<T> initializer, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, [CanBeNull] Action finalizer = null)
+            where T : class
+        {
+            ExecuteHelper(() =>
+            {
+                var items = EnumerableExtensions.Enumerate(WeakReferencesCount, initializer);
+                var weakReferences = EnumerableExtensions.WeakReferences(items);
+                var storage = EnumerableExtensions.WeakReferencesStorage(!fromCollection ? weakReferences : weakReferences.ToList());
+                body(storage);
+                return storage;
+            }, finalizer);
+        }
+
+        private static void ExecuteHelper<T>([NotNull] Func<WeakReferencesStorage<T>> body, [CanBeNull] Action finalizer = null)
             where T : class
         {
             WeakReferencesStorage<T> storage = null;
             try
             {
-                var weakReferences = EnumerableExtensions.WeakReferences(items);
-                storage = EnumerableExtensions.WeakReferencesStorage(!fromCollection ? weakReferences : weakReferences.ToList());
-                body(storage);
+                storage = body();
             }
             finally
             {
@@ -81,20 +83,20 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsCollectionCopyingWork()
         {
-            Execute(Enumerate(), storage => Assert.IsTrue(storage.Count == WeakReferencesCount), true);
+            Execute(() => new object(), storage => Assert.IsTrue(storage.Count == WeakReferencesCount), true);
         }
 
         [TestMethod]
         public void IsEnumerableCopyingWork()
         {
-            Execute(Enumerate(), storage => Assert.IsTrue(storage.Count == WeakReferencesCount));
+            Execute(() => new object(), storage => Assert.IsTrue(storage.Count == WeakReferencesCount));
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void GetItemIndexMinimumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 var item = list[-1];
@@ -105,7 +107,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TypedGetItemIndexMinimumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var item = storage[-1];
             });
@@ -115,7 +117,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void GetItemIndexMaximumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 var item = list[WeakReferencesCount];
@@ -126,7 +128,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TypedGetItemIndexMaximumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var item = storage[WeakReferencesCount];
             });
@@ -136,7 +138,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void SetItemIndexMinimumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list[-1] = null;
@@ -147,7 +149,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TypedSetItemIndexMinimumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 storage[-1] = null;
             });
@@ -157,7 +159,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void SetItemIndexMaximumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list[WeakReferencesCount] = null;
@@ -168,7 +170,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TypedSetItemIndexMaximumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 storage[WeakReferencesCount] = null;
             });
@@ -178,7 +180,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentException))]
         public void SetItemTypeMatchValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list[0] = new object();
@@ -188,7 +190,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void SetItemVersionValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var storageType = typeof(WeakReferencesStorage<object>);
                 var versionProperty = storageType.GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -201,20 +203,20 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsAliveNullableWork()
         {
-            Execute(Enumerate<object>(() => null), storage => Assert.AreEqual(WeakReferencesCount, storage.Alive));
+            Execute<object>(() => null, storage => Assert.AreEqual(WeakReferencesCount, storage.Alive));
         }
 
         [TestMethod]
         public void IsAliveWork()
         {
-            Execute(Enumerate(), storage => Assert.AreEqual(WeakReferencesCount, storage.Alive));
+            Execute(() => new object(), storage => Assert.AreEqual(WeakReferencesCount, storage.Alive));
         }
 
         [TestMethod]
         public void IsAliveAfterCollectionWork()
         {
             Core.GarbageCollection.WeakReference<object> weakReference = null;
-            WeakExecute(Enumerate(), storage =>
+            WeakExecute(() => new object(), storage =>
             {
                 var testObject = new object();
                 weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -236,7 +238,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsAdded()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -250,7 +252,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void IsAddedStable()
         {
             LinkedObject item = null;
-            Execute(Enumerate(() => item = new LinkedObject(item)), storage =>
+            Execute(() => item = new LinkedObject(item), storage =>
             {
                 var testObject = new LinkedObject(storage[WeakReferencesCount - 1].Target);
                 storage.Add(new Core.GarbageCollection.WeakReference<LinkedObject>(testObject));
@@ -262,7 +264,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void AddIndexValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -276,7 +278,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentException))]
         public void AddTypeMatchValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list.Add(new object());
@@ -286,7 +288,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void AddCountValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -299,7 +301,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void AddVersionValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -317,7 +319,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsInserted()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -331,7 +333,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void IsInsertStable()
         {
             LinkedObject item = null;
-            Execute(Enumerate(() => item = new LinkedObject(item)), storage =>
+            Execute(() => item = new LinkedObject(item), storage =>
             {
                 var testObject = new LinkedObject(storage[InsertIndex - 1].Target);
                 var weakReference = new Core.GarbageCollection.WeakReference<LinkedObject>(testObject);
@@ -346,7 +348,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentException))]
         public void InsertTypeMatchValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list.Insert(InsertIndex, new object());
@@ -357,7 +359,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void InsertIndexMinimumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list.Insert(-1, null);
@@ -368,13 +370,13 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TypedInsertIndexMinimumValidation()
         {
-            Execute(Enumerate(), storage => storage.Insert(-1, null));
+            Execute(() => new object(), storage => storage.Insert(-1, null));
         }
 
         [TestMethod]
         public void InsertIndexHighestValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list.Insert(WeakReferencesCount, null);
@@ -384,14 +386,14 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void TypedInsertIndexHighestValidation()
         {
-            Execute(Enumerate(), storage => storage.Insert(WeakReferencesCount, null));
+            Execute(() => new object(), storage => storage.Insert(WeakReferencesCount, null));
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void InsertIndexMaximumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list.Insert(WeakReferencesCount + 1, null);
@@ -402,13 +404,13 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TypedInsertIndexMaximumValidation()
         {
-            Execute(Enumerate(), storage => storage.Insert(WeakReferencesCount + 1, null));
+            Execute(() => new object(), storage => storage.Insert(WeakReferencesCount + 1, null));
         }
 
         [TestMethod]
         public void InsertCountValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -421,7 +423,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void InsertVersionValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var storageType = typeof(WeakReferencesStorage<object>);
                 var versionProperty = storageType.GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -437,7 +439,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsContains()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -450,7 +452,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsContainsNull()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 storage.Insert(InsertIndex, null);
                 Assert.IsTrue(storage.Contains(null));
@@ -460,7 +462,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsIndexOfMatch()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -473,7 +475,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsIndexOfNotMatch()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 var weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -486,7 +488,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void IsRemoved()
         {
             Core.GarbageCollection.WeakReference<object> weakReference = null;
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -507,7 +509,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void RemoveCountValidation()
         {
             Core.GarbageCollection.WeakReference<object> weakReference = null;
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -528,7 +530,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void RemoveVersionValidation()
         {
             Core.GarbageCollection.WeakReference<object> weakReference = null;
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var storageType = typeof(WeakReferencesStorage<object>);
                 var versionProperty = storageType.GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -552,7 +554,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void IsRemovedAt()
         {
             Core.GarbageCollection.WeakReference<object> weakReference = null;
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -573,7 +575,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void RemoveAtIndexMinimumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list.RemoveAt(-1);
@@ -584,14 +586,14 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TypedRemoveAtIndexMinimumValidation()
         {
-            Execute(Enumerate(), storage => storage.RemoveAt(-1));
+            Execute(() => new object(), storage => storage.RemoveAt(-1));
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void RemoveAtIndexMaximumValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var list = (IList)storage;
                 list.RemoveAt(WeakReferencesCount);
@@ -602,14 +604,14 @@ namespace Interop.Core.Tests.GarbageCollection
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TypedRemoveAtIndexMaximumValidation()
         {
-            Execute(Enumerate(), storage => storage.RemoveAt(WeakReferencesCount));
+            Execute(() => new object(), storage => storage.RemoveAt(WeakReferencesCount));
         }
 
         [TestMethod]
         public void RemoveAtCountValidation()
         {
             Core.GarbageCollection.WeakReference<object> weakReference = null;
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var testObject = new object();
                 weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -630,7 +632,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void RemoveAtVersionValidation()
         {
             Core.GarbageCollection.WeakReference<object> weakReference = null;
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var storageType = typeof(WeakReferencesStorage<object>);
                 var versionProperty = storageType.GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -653,7 +655,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void ClearCountValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 storage.Clear();
                 Assert.AreEqual(0, storage.Count);
@@ -663,7 +665,7 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void ClearVersionValidation()
         {
-            Execute(Enumerate(), storage =>
+            Execute(() => new object(), storage =>
             {
                 var storageType = typeof(WeakReferencesStorage<object>);
                 var versionProperty = storageType.GetProperty("Version", BindingFlags.NonPublic | BindingFlags.Instance);
