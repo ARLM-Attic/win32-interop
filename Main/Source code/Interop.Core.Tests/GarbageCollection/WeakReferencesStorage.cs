@@ -65,7 +65,10 @@ namespace Interop.Core.Tests.GarbageCollection
                 {
                     foreach (var weakReference in storage)
                     {
-                        weakReference.Dispose();
+                        if (weakReference != null)
+                        {
+                            weakReference.Dispose();
+                        }
                     }
                 }
                 if (finalizer != null)
