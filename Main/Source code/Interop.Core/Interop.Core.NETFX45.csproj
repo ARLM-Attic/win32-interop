@@ -197,7 +197,6 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Helpers\CodeAnalysisExtensions.cs" />
     <Compile Include="Helpers\ComparableHelper.cs" />
-    <Compile Include="Helpers\ContractExtensions.cs" />
     <Compile Include="Helpers\ErrorHelper.cs" />
     <Compile Include="Helpers\JetBrains.Annotations.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />

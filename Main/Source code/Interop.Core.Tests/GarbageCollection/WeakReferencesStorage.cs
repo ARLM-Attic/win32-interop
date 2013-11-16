@@ -39,7 +39,17 @@ namespace Interop.Core.Tests.GarbageCollection
             return EnumerableExtensions.Enumerate(WeakReferencesCount, initializer);
         }
 
-        private static void Execute<T>([NotNull] T[] items, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, bool keepAliveItems = true, [CanBeNull] Action finalizer = null)
+        private static void Execute<T>([NotNull] T[] items, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, [CanBeNull] Action finalizer = null)
+            where T : class
+        {
+            WeakExecute(items, storage =>
+            {
+                body(storage);
+                GC.KeepAlive(items);
+            }, fromCollection, finalizer);
+        }
+
+        private static void WeakExecute<T>([NotNull] T[] items, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, [CanBeNull] Action finalizer = null)
             where T : class
         {
             WeakReferencesStorage<T> storage = null;
@@ -48,10 +58,6 @@ namespace Interop.Core.Tests.GarbageCollection
                 var weakReferences = EnumerableExtensions.WeakReferences(items);
                 storage = EnumerableExtensions.WeakReferencesStorage(!fromCollection ? weakReferences : weakReferences.ToList());
                 body(storage);
-                if (keepAliveItems)
-                {
-                    GC.KeepAlive(items);
-                }
             }
             finally
             {
@@ -205,7 +211,7 @@ namespace Interop.Core.Tests.GarbageCollection
         public void IsAliveAfterCollectionWork()
         {
             Core.GarbageCollection.WeakReference<object> weakReference = null;
-            Execute(Enumerate(), storage =>
+            WeakExecute(Enumerate(), storage =>
             {
                 var testObject = new object();
                 weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
@@ -215,7 +221,7 @@ namespace Interop.Core.Tests.GarbageCollection
                 GC.Collect();
                 Assert.AreEqual(1, storage.Alive);
                 GC.KeepAlive(testObject);
-            }, keepAliveItems: false, finalizer: () =>
+            }, finalizer: () =>
             {
                 if (weakReference != null)
                 {
