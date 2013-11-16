@@ -23,11 +23,7 @@ namespace Interop.Core
         {
             if (!Ignored)
             {
-#if SILVERLIGHT
-                Debug.WriteLine(message);
-#else
                 Trace.TraceWarning(message);
-#endif
             }
         }
 

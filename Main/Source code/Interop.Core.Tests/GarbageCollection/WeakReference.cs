@@ -10,7 +10,6 @@ namespace Interop.Core.Tests.GarbageCollection
     [TestClass]
     public class WeakReferenceTests
     {
-#if NETFX
         [TestMethod]
         public void TypeSecurity()
         {
@@ -64,7 +63,6 @@ namespace Interop.Core.Tests.GarbageCollection
                 Assert.Fail("Constructor of type " + typeof(WeakReference<>).Name + " with signature .ctor(`0, System.Boolean) not found!");
             }
         }
-#endif
 
         [TestMethod]
         public void IsTargetAlive()
@@ -128,7 +126,6 @@ namespace Interop.Core.Tests.GarbageCollection
             weakReference.Dispose();
         }
 
-#if NETFX
         [TestMethod]
         public void TargetSecurity()
         {
@@ -136,7 +133,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(member.IsSecurityCritical);
             Assert.IsTrue(member.IsSecuritySafeCritical);
         }
-#endif
 
         [TestMethod]
         public void IsAlive()
@@ -200,7 +196,6 @@ namespace Interop.Core.Tests.GarbageCollection
             weakReference.Dispose();
         }
 
-#if NETFX
         [TestMethod]
         public void IsAliveSecurity()
         {
@@ -208,7 +203,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(member.IsSecurityCritical);
             Assert.IsTrue(member.IsSecuritySafeCritical);
         }
-#endif
 
         [TestMethod]
         public void IsEqualityWork()
@@ -228,7 +222,6 @@ namespace Interop.Core.Tests.GarbageCollection
 // ReSharper restore EqualExpressionComparison
         }
 
-#if NETFX
         [TestMethod]
         public void OpEqualitySecurity()
         {
@@ -244,7 +237,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(member.IsSecurityCritical);
             Assert.IsTrue(member.IsSecuritySafeCritical);
         }
-#endif
 
         [TestMethod]
         public void IsEqualsWork()
@@ -258,7 +250,6 @@ namespace Interop.Core.Tests.GarbageCollection
 // ReSharper restore EqualExpressionComparison
         }
 
-#if NETFX
         [TestMethod]
         public void EqualsStaticSecurity()
         {
@@ -282,7 +273,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(member.IsSecurityCritical);
             Assert.IsTrue(member.IsSecuritySafeCritical);
         }
-#endif
 
         [TestMethod]
         public void ToStringTest()
@@ -302,7 +292,6 @@ namespace Interop.Core.Tests.GarbageCollection
             weakReference.Dispose();
         }
 
-#if NETFX
         [TestMethod]
         public void ToStringSecurity()
         {
@@ -317,6 +306,5 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(member.IsSecurityCritical);
             Assert.IsTrue(member.IsSecuritySafeCritical);
         }
-#endif
     }
 }

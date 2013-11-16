@@ -15,10 +15,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
-#if !SILVERLIGHT
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
-#endif
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -48,7 +46,6 @@ namespace Interop.Core.GarbageCollection
         public SafeGCHandle([CanBeNull] object target, GCHandleType type)
             : base(IntPtr.Zero, true)
         {
-#if !SILVERLIGHT
             RuntimeHelpers.PrepareConstrainedRegions();
             try
             {
@@ -56,11 +53,8 @@ namespace Interop.Core.GarbageCollection
             }
             finally
             {
-#endif
                 SetHandle((IntPtr)GCHandle.Alloc(target, type));
-#if !SILVERLIGHT
             }
-#endif
         }
 
         #endregion
@@ -85,10 +79,8 @@ namespace Interop.Core.GarbageCollection
         public override bool IsInvalid
         {
             [SecurityCritical]
-#if !SILVERLIGHT
             [PrePrepareMethod]
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-#endif
             get
             {
                 Contract.Ensures(Contract.Result<bool>() == (handle == IntPtr.Zero));
@@ -100,9 +92,7 @@ namespace Interop.Core.GarbageCollection
 
         #region Equality members
 
-#if !SILVERLIGHT
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-#endif
         public static bool operator ==(SafeGCHandle first, SafeGCHandle second)
         {
             if (Equals(first, null) && Equals(second, null))
@@ -116,9 +106,7 @@ namespace Interop.Core.GarbageCollection
             return first.handle == second.handle;
         }
 
-#if !SILVERLIGHT
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-#endif
         public static bool operator !=(SafeGCHandle first, SafeGCHandle second)
         {
             return !(first == second);
@@ -169,10 +157,8 @@ namespace Interop.Core.GarbageCollection
         /// </summary>
         /// <returns>Whether the handle was released successfully.</returns>
         [SecurityCritical]
-#if !SILVERLIGHT
         [PrePrepareMethod]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-#endif
         protected override bool ReleaseHandle()
         {
             if (handle != IntPtr.Zero)

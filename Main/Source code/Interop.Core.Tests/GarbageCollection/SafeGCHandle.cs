@@ -1,6 +1,4 @@
-﻿#if NETFX
-using System.Reflection;
-#endif
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 using Interop.Core.GarbageCollection;
@@ -12,7 +10,6 @@ namespace Interop.Core.Tests.GarbageCollection
     [TestClass]
     public class SafeGCHandleTests
     {
-#if NETFX
         [TestMethod]
         public void TypeSecurity()
         {
@@ -28,7 +25,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(constructor.IsSecurityCritical);
             Assert.IsFalse(constructor.IsSecuritySafeCritical);
         }
-#endif
 
         [TestMethod]
         public void IsTargetWork()
@@ -39,7 +35,6 @@ namespace Interop.Core.Tests.GarbageCollection
             safeGCHandle.Dispose();
         }
 
-#if NETFX
         [TestMethod]
         public void TargetSecurity()
         {
@@ -55,7 +50,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(isInvalid.IsSecurityCritical);
             Assert.IsFalse(isInvalid.IsSecuritySafeCritical);
         }
-#endif
 
         [TestMethod]
         public void IsEqualityWork()
@@ -73,7 +67,6 @@ namespace Interop.Core.Tests.GarbageCollection
 // ReSharper restore EqualExpressionComparison
         }
 
-#if NETFX
         [TestMethod]
         public void OpEqualitySecurity()
         {
@@ -89,7 +82,6 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(opInequality.IsSecurityCritical);
             Assert.IsFalse(opInequality.IsSecuritySafeCritical);
         }
-#endif
 
         [TestMethod]
         public void IsEqualsWork()
@@ -103,7 +95,6 @@ namespace Interop.Core.Tests.GarbageCollection
 // ReSharper restore EqualExpressionComparison
         }
 
-#if NETFX
         [TestMethod]
         public void EqualsSecurity()
         {
@@ -127,6 +118,5 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsTrue(releaseHandle.IsSecurityCritical);
             Assert.IsFalse(releaseHandle.IsSecuritySafeCritical);
         }
-#endif
     }
 }

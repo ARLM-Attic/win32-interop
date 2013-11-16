@@ -6,11 +6,7 @@ using System.Windows.Threading;
 
 namespace Interop.Core.Windows
 {
-#if SILVERLIGHT
-    public sealed class HwndWrapper : DependencyObject, IDisposable
-#else
     public sealed class HwndWrapper : DispatcherObject, IDisposable
-#endif
     {
         private string _className;
 

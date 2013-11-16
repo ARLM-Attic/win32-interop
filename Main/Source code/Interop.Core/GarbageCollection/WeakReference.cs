@@ -14,14 +14,10 @@
 
 using System;
 using System.Diagnostics.Contracts;
-#if !SILVERLIGHT
 using System.Runtime.ConstrainedExecution;
-#endif
 using System.Runtime.InteropServices;
 using System.Security;
-#if !SILVERLIGHT
 using System.Security.Permissions;
-#endif
 
 using JetBrains.Annotations;
 
@@ -37,9 +33,7 @@ namespace Interop.Core.GarbageCollection
     /// </para>
     /// </remarks>
     /// <typeparam name="T">The type of object to reference.</typeparam>
-#if !SILVERLIGHT
     [SecurityPermission(SecurityAction.InheritanceDemand, UnmanagedCode = true)]
-#endif
     public class WeakReference<T> : IDisposable
         where T : class
     {
@@ -177,10 +171,8 @@ namespace Interop.Core.GarbageCollection
         /// <summary>
         /// Frees the weak reference.
         /// </summary>
-#if !SILVERLIGHT
         [PrePrepareMethod]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-#endif
         [SecuritySafeCritical]
         public void Dispose()
         {

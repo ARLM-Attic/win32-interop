@@ -15,14 +15,12 @@ namespace Interop.Core.Tests.GarbageCollection
     [TestClass]
     public class WeakReferencesStorageTests
     {
-#if NETFX
         [TestMethod]
         public void TypeSecurity()
         {
             var member = typeof(WeakReferencesStorage<>);
             Assert.IsTrue(member.IsSecurityTransparent);
         }
-#endif
 
         private const int WeakReferencesCount = 3;
 
