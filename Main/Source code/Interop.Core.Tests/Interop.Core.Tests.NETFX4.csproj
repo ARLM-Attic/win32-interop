@@ -41,6 +41,9 @@
     <DefineConstants>NETFX4;NETFX;TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Profiler.Core.Api">
+      <HintPath>C:\Program Files (x86)\JetBrains\dotMemory\v4.0\Bin\JetBrains.Profiler.Core.Api.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -86,6 +89,7 @@
     <Compile Include="GarbageCollection\Helpers\EnumerableExtensions.cs" />
     <Compile Include="GarbageCollection\Helpers\LinkedObject.cs" />
     <Compile Include="GarbageCollection\Helpers\LinkedObjectExtensions.cs" />
+    <Compile Include="GarbageCollection\Helpers\MarkedObject.cs" />
     <Compile Include="GarbageCollection\Helpers\ResurrectingObject.cs" />
     <Compile Include="GarbageCollection\SafeGCHandle.cs" />
     <Compile Include="GarbageCollection\WeakReference.cs" />

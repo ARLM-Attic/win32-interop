@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 
 using Interop.Core.GarbageCollection;
 using Interop.Core.Tests.GarbageCollection.Helpers;
@@ -213,15 +214,23 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsAliveAfterCollectionWork()
         {
-            Core.GarbageCollection.WeakReference<object> weakReference = null;
-            WeakExecute(() => new object(), storage =>
+            Core.GarbageCollection.WeakReference<MarkedObject> weakReference = null;
+            WeakExecute(() => new MarkedObject(), storage =>
             {
-                var testObject = new object();
-                weakReference = new Core.GarbageCollection.WeakReference<object>(testObject);
+                var testObject = new MarkedObject();
+                weakReference = new Core.GarbageCollection.WeakReference<MarkedObject>(testObject);
                 storage.Add(weakReference);
+                while (!JetBrains.Profiler.Core.Api.MemoryProfiler.IsActive)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(10));
+                }
+                JetBrains.Profiler.Core.Api.MemoryProfiler.EnableAllocations();
+                JetBrains.Profiler.Core.Api.MemoryProfiler.EnableTraffic();
+                JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
+                JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
                 Assert.AreEqual(1, storage.Alive);
                 GC.KeepAlive(testObject);
             }, finalizer: () =>
