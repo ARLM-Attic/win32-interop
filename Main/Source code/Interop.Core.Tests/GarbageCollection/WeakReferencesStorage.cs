@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -25,28 +24,28 @@ namespace Interop.Core.Tests.GarbageCollection
 
         private const int WeakReferencesCount = 3;
 
-        private static void Execute<T>([NotNull] Func<T> initializer, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, [CanBeNull] Action finalizer = null)
+        private static void Execute<T>([NotNull] Func<T> initializer, [NotNull] Action<WeakReferencesStorage<T>> body, [CanBeNull] Action finalizer = null)
             where T : class
         {
             ExecuteHelper(() =>
             {
-                var items = EnumerableExtensions.Enumerate(WeakReferencesCount, initializer);
-                var weakReferences = EnumerableExtensions.WeakReferences(items);
-                var storage = EnumerableExtensions.WeakReferencesStorage(!fromCollection ? weakReferences : weakReferences.ToList());
+                var items = EnumerableExtensions<T>.Enumerate(WeakReferencesCount, initializer);
+                var weakReferences = EnumerableExtensions<T>.EnumerateWeakReferences(items);
+                var storage = EnumerableExtensions<T>.WeakReferencesStorage(weakReferences);
                 body(storage);
                 GC.KeepAlive(items);
                 return storage;
             }, finalizer);
         }
 
-        private static void WeakExecute<T>([NotNull] Func<T> initializer, [NotNull] Action<WeakReferencesStorage<T>> body, bool fromCollection = false, [CanBeNull] Action finalizer = null)
+        private static void WeakExecute<T>([NotNull] Func<T> initializer, [NotNull] Action<WeakReferencesStorage<T>> body, [CanBeNull] Action finalizer = null)
             where T : class
         {
             ExecuteHelper(() =>
             {
-                var items = EnumerableExtensions.Enumerate(WeakReferencesCount, initializer);
-                var weakReferences = EnumerableExtensions.WeakReferences(items);
-                var storage = EnumerableExtensions.WeakReferencesStorage(!fromCollection ? weakReferences : weakReferences.ToList());
+                var items = EnumerableExtensions<T>.Enumerate(WeakReferencesCount, initializer);
+                var weakReferences = EnumerableExtensions<T>.EnumerateWeakReferences(items);
+                var storage = EnumerableExtensions<T>.WeakReferencesStorage(weakReferences);
                 body(storage);
                 return storage;
             }, finalizer);
@@ -77,18 +76,6 @@ namespace Interop.Core.Tests.GarbageCollection
                     finalizer();
                 }
             }
-        }
-
-        [TestMethod]
-        public void IsCollectionCopyingWork()
-        {
-            Execute(() => new object(), storage => Assert.IsTrue(storage.Count == WeakReferencesCount), true);
-        }
-
-        [TestMethod]
-        public void IsEnumerableCopyingWork()
-        {
-            Execute(() => new object(), storage => Assert.IsTrue(storage.Count == WeakReferencesCount));
         }
 
         [TestMethod]
@@ -214,26 +201,26 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsAliveAfterCollectionWork()
         {
+            while (!JetBrains.Profiler.Core.Api.MemoryProfiler.IsActive)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(10));
+            }
+            JetBrains.Profiler.Core.Api.MemoryProfiler.EnableAllocations();
+            JetBrains.Profiler.Core.Api.MemoryProfiler.EnableTraffic();
+            JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
             Core.GarbageCollection.WeakReference<MarkedObject> weakReference = null;
             WeakExecute(() => new MarkedObject(), storage =>
             {
                 var testObject = new MarkedObject();
                 weakReference = new Core.GarbageCollection.WeakReference<MarkedObject>(testObject);
                 storage.Add(weakReference);
-                while (!JetBrains.Profiler.Core.Api.MemoryProfiler.IsActive)
-                {
-                    Thread.Sleep(TimeSpan.FromSeconds(10));
-                }
-                JetBrains.Profiler.Core.Api.MemoryProfiler.EnableAllocations();
-                JetBrains.Profiler.Core.Api.MemoryProfiler.EnableTraffic();
-                JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
                 JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
                 Assert.AreEqual(1, storage.Alive);
                 GC.KeepAlive(testObject);
-            }, finalizer: () =>
+            }, () =>
             {
                 if (weakReference != null)
                 {
@@ -503,7 +490,7 @@ namespace Interop.Core.Tests.GarbageCollection
                 var isRemoved = storage.Remove(weakReference);
                 Assert.IsTrue(isRemoved && !storage.Contains(weakReference));
                 GC.KeepAlive(testObject);
-            }, finalizer: () =>
+            }, () =>
             {
                 if (weakReference != null)
                 {
@@ -524,7 +511,7 @@ namespace Interop.Core.Tests.GarbageCollection
                 storage.Remove(weakReference);
                 Assert.AreEqual(WeakReferencesCount, storage.Count);
                 GC.KeepAlive(testObject);
-            }, finalizer: () =>
+            }, () =>
             {
                 if (weakReference != null)
                 {
@@ -548,7 +535,7 @@ namespace Interop.Core.Tests.GarbageCollection
                 storage.Remove(weakReference);
                 Assert.AreNotEqual(versionValue, versionProperty.GetValue(storage, null));
                 GC.KeepAlive(testObject);
-            }, finalizer: () =>
+            }, () =>
             {
                 if (weakReference != null)
                 {
@@ -569,7 +556,7 @@ namespace Interop.Core.Tests.GarbageCollection
                 storage.RemoveAt(InsertIndex);
                 Assert.IsFalse(storage.Contains(weakReference));
                 GC.KeepAlive(testObject);
-            }, finalizer: () =>
+            }, () =>
             {
                 if (weakReference != null)
                 {
@@ -626,7 +613,7 @@ namespace Interop.Core.Tests.GarbageCollection
                 storage.RemoveAt(InsertIndex);
                 Assert.AreEqual(WeakReferencesCount, storage.Count);
                 GC.KeepAlive(testObject);
-            }, finalizer: () =>
+            }, () =>
             {
                 if (weakReference != null)
                 {
@@ -650,7 +637,7 @@ namespace Interop.Core.Tests.GarbageCollection
                 storage.RemoveAt(InsertIndex);
                 Assert.AreNotEqual(versionValue, versionProperty.GetValue(storage, null));
                 GC.KeepAlive(testObject);
-            }, finalizer: () =>
+            }, () =>
             {
                 if (weakReference != null)
                 {

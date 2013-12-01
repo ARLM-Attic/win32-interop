@@ -41,7 +41,8 @@
     <DefineConstants>NETFX45;NETFX;TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Profiler.Core.Api">
+    <Reference Include="JetBrains.Profiler.Core.Api, Version=1.6.1551.30242, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\JetBrains\dotMemory\v4.0\Bin\JetBrains.Profiler.Core.Api.dll</HintPath>
     </Reference>
     <Reference Include="System" />

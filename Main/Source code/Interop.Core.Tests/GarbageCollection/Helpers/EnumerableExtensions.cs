@@ -7,38 +7,33 @@ using JetBrains.Annotations;
 
 namespace Interop.Core.Tests.GarbageCollection.Helpers
 {
-    public static class EnumerableExtensions
+    public static class EnumerableExtensions<T>
+        where T : class
     {
         [NotNull]
-        public static IEnumerable<T> Enumerate<T>(int count, [NotNull] Func<T> initializer)
-            where T : class
+        public static T[] Enumerate(int count, [NotNull] Func<T> initializer)
         {
+            var result = new T[count];
             for (var index = 0; index < count; index++)
             {
-                yield return initializer();
+                result[index] = initializer();
             }
+            return result;
         }
 
         [NotNull]
-        public static IEnumerable<Core.GarbageCollection.WeakReference<T>> WeakReferences<T>([NotNull] IEnumerable<T> items)
-            where T : class
+        public static Core.GarbageCollection.WeakReference<T>[] EnumerateWeakReferences([NotNull] T[] items)
         {
-            foreach (var item in items)
+            var result = new Core.GarbageCollection.WeakReference<T>[items.Length];
+            for (var index = 0; index < items.Length; index++)
             {
-                if (item == null)
-                {
-                    yield return null;
-                }
-                else
-                {
-                    yield return new Core.GarbageCollection.WeakReference<T>(item);
-                }
+                result[index] = items[index] == null ? null : new Core.GarbageCollection.WeakReference<T>(items[index]);
             }
+            return result;
         }
 
         [NotNull]
-        public static WeakReferencesStorage<T> WeakReferencesStorage<T>([NotNull] IEnumerable<Core.GarbageCollection.WeakReference<T>> weakReferences)
-            where T : class
+        public static WeakReferencesStorage<T> WeakReferencesStorage([NotNull] IEnumerable<Core.GarbageCollection.WeakReference<T>> weakReferences)
         {
             return new WeakReferencesStorage<T>(weakReferences);
         }
