@@ -201,13 +201,12 @@ namespace Interop.Core.Tests.GarbageCollection
         [TestMethod]
         public void IsAliveAfterCollectionWork()
         {
-            while (!JetBrains.Profiler.Core.Api.MemoryProfiler.IsActive)
+            if (JetBrains.Profiler.Core.Api.MemoryProfiler.IsActive)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(10));
+                JetBrains.Profiler.Core.Api.MemoryProfiler.EnableAllocations();
+                JetBrains.Profiler.Core.Api.MemoryProfiler.EnableTraffic();
+                JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
             }
-            JetBrains.Profiler.Core.Api.MemoryProfiler.EnableAllocations();
-            JetBrains.Profiler.Core.Api.MemoryProfiler.EnableTraffic();
-            JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
             Core.GarbageCollection.WeakReference<MarkedObject> weakReference = null;
             WeakExecute(() => new MarkedObject(), storage =>
             {
@@ -217,7 +216,10 @@ namespace Interop.Core.Tests.GarbageCollection
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
-                JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
+                if (JetBrains.Profiler.Core.Api.MemoryProfiler.IsActive)
+                {
+                    JetBrains.Profiler.Core.Api.MemoryProfiler.Dump();
+                }
                 Assert.AreEqual(1, storage.Alive);
                 GC.KeepAlive(testObject);
             }, () =>
