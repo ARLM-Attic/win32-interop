@@ -26,9 +26,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{1589CD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{46275726-68BB-4995-80B9-397E1C068881}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Visual Studio", "Visual Studio", "{BBE2D0B2-2174-439A-82C1-287EA00B4071}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.VisualStudio.NETFX4", "Interop.VisualStudio\Interop.VisualStudio.NETFX4.csproj", "{374BDCB1-8780-4E95-ACAB-32C34B470145}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.VisualStudio.NETFX45", "Interop.VisualStudio\Interop.VisualStudio.NETFX45.csproj", "{512414EC-376F-451F-95F2-F5B45280F50F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.VisualStudio.COM.NETFX4", "Interop.VisualStudio.COM\Interop.VisualStudio.COM.NETFX4.csproj", "{AE5C487F-9D3E-4595-A72C-CA04B77C6D88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.VisualStudio.COM.NETFX45", "Interop.VisualStudio.COM\Interop.VisualStudio.COM.NETFX45.csproj", "{1474D804-94E1-4ADC-BE0B-49196FD511DE}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 9
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs34
 		SccLocalPath0 = .
@@ -48,6 +58,22 @@ Global
 		SccProjectTopLevelParentUniqueName4 = Interop.sln
 		SccProjectName4 = Interop.Core.Tests
 		SccLocalPath4 = Interop.Core.Tests
+		SccProjectUniqueName5 = Interop.VisualStudio\\Interop.VisualStudio.NETFX4.csproj
+		SccProjectTopLevelParentUniqueName5 = Interop.sln
+		SccProjectName5 = Interop.VisualStudio
+		SccLocalPath5 = Interop.VisualStudio
+		SccProjectUniqueName6 = Interop.VisualStudio\\Interop.VisualStudio.NETFX45.csproj
+		SccProjectTopLevelParentUniqueName6 = Interop.sln
+		SccProjectName6 = Interop.VisualStudio
+		SccLocalPath6 = Interop.VisualStudio
+		SccProjectUniqueName7 = Interop.VisualStudio.COM\\Interop.VisualStudio.COM.NETFX4.csproj
+		SccProjectTopLevelParentUniqueName7 = Interop.sln
+		SccProjectName7 = Interop.VisualStudio.COM
+		SccLocalPath7 = Interop.VisualStudio.COM
+		SccProjectUniqueName8 = Interop.VisualStudio.COM\\Interop.VisualStudio.COM.NETFX45.csproj
+		SccProjectTopLevelParentUniqueName8 = Interop.sln
+		SccProjectName8 = Interop.VisualStudio.COM
+		SccLocalPath8 = Interop.VisualStudio.COM
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|Any CPU = Analysis|Any CPU
@@ -79,6 +105,30 @@ Global
 		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C41A241-6CB9-4017-976E-147EE6FFA6E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{374BDCB1-8780-4E95-ACAB-32C34B470145}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{374BDCB1-8780-4E95-ACAB-32C34B470145}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{374BDCB1-8780-4E95-ACAB-32C34B470145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{374BDCB1-8780-4E95-ACAB-32C34B470145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{374BDCB1-8780-4E95-ACAB-32C34B470145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{374BDCB1-8780-4E95-ACAB-32C34B470145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{512414EC-376F-451F-95F2-F5B45280F50F}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{512414EC-376F-451F-95F2-F5B45280F50F}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{512414EC-376F-451F-95F2-F5B45280F50F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{512414EC-376F-451F-95F2-F5B45280F50F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{512414EC-376F-451F-95F2-F5B45280F50F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{512414EC-376F-451F-95F2-F5B45280F50F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE5C487F-9D3E-4595-A72C-CA04B77C6D88}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{AE5C487F-9D3E-4595-A72C-CA04B77C6D88}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{AE5C487F-9D3E-4595-A72C-CA04B77C6D88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE5C487F-9D3E-4595-A72C-CA04B77C6D88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE5C487F-9D3E-4595-A72C-CA04B77C6D88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE5C487F-9D3E-4595-A72C-CA04B77C6D88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1474D804-94E1-4ADC-BE0B-49196FD511DE}.Analysis|Any CPU.ActiveCfg = Analysis|Any CPU
+		{1474D804-94E1-4ADC-BE0B-49196FD511DE}.Analysis|Any CPU.Build.0 = Analysis|Any CPU
+		{1474D804-94E1-4ADC-BE0B-49196FD511DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1474D804-94E1-4ADC-BE0B-49196FD511DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1474D804-94E1-4ADC-BE0B-49196FD511DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1474D804-94E1-4ADC-BE0B-49196FD511DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,5 +138,9 @@ Global
 		{39D9023D-9B50-457F-A302-380A4D318318} = {1589CDD7-F787-4E7B-9A05-B6BE764BAA99}
 		{8C41A241-6CB9-4017-976E-147EE6FFA6E7} = {46275726-68BB-4995-80B9-397E1C068881}
 		{9C9D482B-7812-4589-BF29-10CBFFEB4FB2} = {46275726-68BB-4995-80B9-397E1C068881}
+		{374BDCB1-8780-4E95-ACAB-32C34B470145} = {BBE2D0B2-2174-439A-82C1-287EA00B4071}
+		{512414EC-376F-451F-95F2-F5B45280F50F} = {BBE2D0B2-2174-439A-82C1-287EA00B4071}
+		{AE5C487F-9D3E-4595-A72C-CA04B77C6D88} = {BBE2D0B2-2174-439A-82C1-287EA00B4071}
+		{1474D804-94E1-4ADC-BE0B-49196FD511DE} = {BBE2D0B2-2174-439A-82C1-287EA00B4071}
 	EndGlobalSection
 EndGlobal

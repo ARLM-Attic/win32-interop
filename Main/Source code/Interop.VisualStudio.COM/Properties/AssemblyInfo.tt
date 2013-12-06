@@ -5,28 +5,31 @@
 <#@ include file="..\..\Include\Versions.ttinclude" #>
 using System;
 using System.Reflection;
-using System.Resources;
 using System.Runtime.InteropServices;
 using System.Security;
 
-[assembly: AssemblyTitle("Interop.Core.dll")]
-[assembly: AssemblyDescription("Windows API wrappers & helpers for .NET")]
+[assembly: AssemblyTitle("Interop.VisualStudio.COM.dll")]
+[assembly: AssemblyDescription("COM exportable API for Visual Studio API wrappers & helpers")]
 [assembly: AssemblyProduct("Interop")]
 [assembly: AssemblyCopyright("<#= Copyright #>")]
 
 [assembly: SecurityRules(SecurityRuleSet.Level2, SkipVerificationInFullTrust = true)]
 [assembly: AllowPartiallyTrustedCallers]
 
-[assembly: ComVisible(false)]
+[assembly: ComVisible(true)]
 [assembly: CLSCompliant(true)]
 
-[assembly: NeutralResourcesLanguage("en-us")]
+#if NETFX4
+[assembly: Guid("0FD2A011-F544-45D9-8C32-AA91A80EB89A")]
+#elif NETFX45
+[assembly: Guid("CA4FC603-149E-445F-A7B5-C58B37E6647F")]
+#endif
 
 #if NETFX4
-[assembly: AssemblyVersion("<#= Versions.NETFX4.Core #>")]
-[assembly: AssemblyFileVersion("<#= Versions.NETFX4.Core #>")]
+[assembly: AssemblyVersion("<#= Versions.NETFX4.VisualStudio.COM #>")]
+[assembly: AssemblyFileVersion("<#= Versions.NETFX4.VisualStudio.COM #>")]
 #elif NETFX45
-[assembly: AssemblyVersion("<#= Versions.NETFX45.Core #>")]
-[assembly: AssemblyFileVersion("<#= Versions.NETFX45.Core #>")]
+[assembly: AssemblyVersion("<#= Versions.NETFX45.VisualStudio.COM #>")]
+[assembly: AssemblyFileVersion("<#= Versions.NETFX45.VisualStudio.COM #>")]
 #endif
 [assembly: AssemblyInformationalVersion("<#= Version #>")]

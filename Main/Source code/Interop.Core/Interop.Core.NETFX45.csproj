@@ -82,7 +82,7 @@
     <DefineConstants>NETFX45;NETFX;TRACE;RELEASE</DefineConstants>
     <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
@@ -200,6 +200,7 @@
     <Compile Include="Helpers\ErrorHelper.cs" />
     <Compile Include="Helpers\JetBrains.Annotations.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
+    <Compile Include="NativeMethods\HResult.cs" />
     <Compile Include="NativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Window.cs" />
@@ -227,6 +228,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <TextTemplatingPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v11.0\TextTemplating\Microsoft.TextTemplating.targets</TextTemplatingPath>
   </PropertyGroup>

@@ -7,14 +7,26 @@ public static class Versions
 {
     public static class NETFX4
     {
-        public const string Core = "1.0.23.0";
-        public const string CoreTests = "1.0.105.0";
+        public const string Core = "1.0.57.0";
+        public const string CoreTests = "1.0.226.0";
+
+        public static class VisualStudio
+        {
+            public const string Base = "1.0.17.0";
+            public const string COM = "1.0.4.0";
+        }
     }
 
     public static class NETFX45
     {
-        public const string Core = "1.0.17.0";
-        public const string CoreTests = "1.0.71.0";
+        public const string Core = "1.0.32.0";
+        public const string CoreTests = "1.0.179.0";
+
+        public static class VisualStudio
+        {
+            public const string Base = "1.0.23.0";
+            public const string COM = "1.0.7.0";
+        }
     }
 }
 #>
