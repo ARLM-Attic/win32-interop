@@ -11,6 +11,8 @@ namespace Interop.VisualStudio
 
         string Description { get; }
 
+        string HelpKeyword { get; }
+
         string HelpFile { get; }
 
         int HelpContext { get; }

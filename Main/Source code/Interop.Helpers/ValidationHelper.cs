@@ -103,6 +103,22 @@ namespace Interop.Helpers
         }
 
         [ContractArgumentValidator]
+        public static void NotZeroLength([CanBeNull] Array argument, [NotNull] Expression<Func<Array>> parameterExpression, [CanBeNull] string reason = null)
+        {
+            NotZeroLength(argument, ((MemberExpression)parameterExpression.Body).Member.Name, reason);
+        }
+
+        [ContractArgumentValidator]
+        public static void NotZeroLength([CanBeNull] Array argument, [NotNull] string parameterName, [CanBeNull] string reason = null)
+        {
+            if (argument != null && argument.Length <= 0)
+            {
+                throw new ArgumentException(reason ?? "Zero-length array not supported.", parameterName);
+            }
+            Contract.EndContractBlock();
+        }
+
+        [ContractArgumentValidator]
         public static void NotMultidimensional([CanBeNull] Array argument, [NotNull] Expression<Func<Array>> parameterExpression, [CanBeNull] string reason = null)
         {
             NotMultidimensional(argument, ((MemberExpression)parameterExpression.Body).Member.Name, reason);

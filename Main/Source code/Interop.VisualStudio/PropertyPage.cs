@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 
 using Interop.Core;
+using Interop.Helpers;
 
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -31,7 +32,8 @@ namespace Interop.VisualStudio
 
         public void Activate(IntPtr hWndParent, RECT[] pRect, int bModal)
         {
-            throw new NotImplementedException();
+            UnsafeWrappers.SetParent(_tab.Handle, hWndParent);
+            Move(pRect);
         }
 
         public void Deactivate()
@@ -40,10 +42,8 @@ namespace Interop.VisualStudio
 
         public void GetPageInfo(PROPPAGEINFO[] pPageInfo)
         {
-            if (pPageInfo == null || pPageInfo.Length <= 0)
-            {
-                throw new ArgumentException();
-            }
+            ValidationHelper.NotNull(pPageInfo, "pPageInfo");
+            ValidationHelper.NotZeroLength(pPageInfo, "pPageInfo");
             var pageInfo = pPageInfo[0];
             pageInfo.cb = (uint)Marshal.SizeOf(typeof(PROPPAGEINFO));
             if (_tab != null)
@@ -79,12 +79,16 @@ namespace Interop.VisualStudio
 
         public void Move(RECT[] pRect)
         {
-            throw new NotImplementedException();
+            ValidationHelper.NotNull(pRect, "pRect");
+            ValidationHelper.NotZeroLength(pRect, "pRect");
+            var rect = pRect[0];
+            _tab.Location = new Point(rect.left, rect.top);
+            _tab.Size = new Size(rect.right - rect.left, rect.bottom - rect.top);
         }
 
         public int IsPageDirty()
         {
-            return (int)(_isChanged ? NativeMethods.HResult.S_OK : NativeMethods.HResult.S_FALSE);
+            return _isChanged ? (int)NativeMethods.HResult.S_OK : (int)NativeMethods.HResult.S_FALSE;
         }
 
         public int Apply()
@@ -108,7 +112,7 @@ namespace Interop.VisualStudio
                 var service = serviceProvider as Microsoft.VisualStudio.VSHelp80.Help2;
                 if (service != null)
                 {
-                    service.DisplayTopicFromF1Keyword(pszHelpDir);
+                    service.DisplayTopicFromF1Keyword(_tab.HelpKeyword);
                 }
             }
 // ReSharper restore SuspiciousTypeConversion.Global
@@ -116,7 +120,7 @@ namespace Interop.VisualStudio
 
         public int TranslateAccelerator(MSG[] pMsg)
         {
-            return _site != null ? _site.TranslateAccelerator(pMsg) : (int)NativeMethods.HResult.S_OK;
+            return _site != null ? _site.TranslateAccelerator(pMsg) : (int)NativeMethods.HResult.E_NOTIMPL;
         }
 
         public string GetProperty(bool perUser, string configName, string propertyName, string defaultValue)
