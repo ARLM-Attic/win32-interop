@@ -209,7 +209,8 @@ namespace Interop.Core.Tests.GarbageCollection
         {
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
-// ReSharper disable RedundantCast
+ // ReSharper disable RedundantCast
+#pragma warning disable 1718
             var testObject = new object();
             var weakReference = new WeakReference<object>(testObject);
             Assert.IsTrue(weakReference == weakReference);
@@ -217,6 +218,7 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsFalse(null == weakReference);
             Assert.IsTrue((WeakReference<object>)null == (WeakReference<object>)null);
             weakReference.Dispose();
+#pragma warning restore 1718
 // ReSharper restore RedundantCast
 // ReSharper restore ConditionIsAlwaysTrueOrFalse
 // ReSharper restore EqualExpressionComparison

@@ -108,12 +108,17 @@
       <Project>{39d9023d-9b50-457f-a302-380a4d318318}</Project>
       <Name>Interop.Core.NETFX4</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Interop.Helpers\Interop.Helpers.NETFX4.csproj">
+      <Project>{ec16cbd8-d839-4a51-8e67-993d3883d8d9}</Project>
+      <Name>Interop.Helpers.NETFX4</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <TextTemplatingPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\TextTemplating\v10.0\Microsoft.TextTemplating.targets</TextTemplatingPath>
     <TextTemplatingPath Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v11.0\TextTemplating\Microsoft.TextTemplating.targets')">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v11.0\TextTemplating\Microsoft.TextTemplating.targets</TextTemplatingPath>
+    <TextTemplatingPath Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\TextTemplating\Microsoft.TextTemplating.targets')">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\TextTemplating\Microsoft.TextTemplating.targets</TextTemplatingPath>
   </PropertyGroup>
   <Import Project="$(TextTemplatingPath)" />
 </Project>

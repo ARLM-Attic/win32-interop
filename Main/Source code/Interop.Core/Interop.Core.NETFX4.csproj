@@ -196,12 +196,6 @@
     <Compile Include="GarbageCollection\WeakReferencesStorage.cs" />
     <Compile Include="GarbageCollection\WeakStorage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Helpers\CodeAnalysisExtensions.cs" />
-    <Compile Include="Helpers\ComparableHelper.cs" />
-    <Compile Include="Helpers\ContractExtensions.cs" />
-    <Compile Include="Helpers\ErrorHelper.cs" />
-    <Compile Include="Helpers\JetBrains.Annotations.cs" />
-    <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="NativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Window.cs" />
@@ -222,16 +216,27 @@
     <Compile Include="NativeMethods\Version.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Helpers\" />
     <Folder Include="SafeNativeMethods\" />
     <Folder Include="SafeWrappers\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Interop.Helpers\Interop.Helpers.NETFX4.csproj">
+      <Project>{ec16cbd8-d839-4a51-8e67-993d3883d8d9}</Project>
+      <Name>Interop.Helpers.NETFX4</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <TextTemplatingPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\TextTemplating\v10.0\Microsoft.TextTemplating.targets</TextTemplatingPath>
     <TextTemplatingPath Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v11.0\TextTemplating\Microsoft.TextTemplating.targets')">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v11.0\TextTemplating\Microsoft.TextTemplating.targets</TextTemplatingPath>
+    <TextTemplatingPath Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\TextTemplating\Microsoft.TextTemplating.targets')">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\TextTemplating\Microsoft.TextTemplating.targets</TextTemplatingPath>
   </PropertyGroup>
   <Import Project="$(TextTemplatingPath)" />
   <PropertyGroup>

@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
 
 using Interop.Core;
 
 using Microsoft.VisualStudio.OLE.Interop;
+
+using IServiceProvider = System.IServiceProvider;
 
 namespace Interop.VisualStudio
 {
@@ -36,7 +40,31 @@ namespace Interop.VisualStudio
 
         public void GetPageInfo(PROPPAGEINFO[] pPageInfo)
         {
-            throw new NotImplementedException();
+            if (pPageInfo == null || pPageInfo.Length <= 0)
+            {
+                throw new ArgumentException();
+            }
+            var pageInfo = pPageInfo[0];
+            pageInfo.cb = (uint)Marshal.SizeOf(typeof(PROPPAGEINFO));
+            if (_tab != null)
+            {
+                pageInfo.pszTitle = _tab.Title;
+                pageInfo.pszDocString = _tab.Description;
+                pageInfo.pszHelpFile = _tab.HelpFile;
+                pageInfo.dwHelpContext = (uint)_tab.HelpContext;
+                pageInfo.SIZE.cx = _tab.Size.Width;
+                pageInfo.SIZE.cy = _tab.Size.Height;
+            }
+            else
+            {
+                pageInfo.pszTitle = string.Empty;
+                pageInfo.pszDocString = null;
+                pageInfo.pszHelpFile = null;
+                pageInfo.dwHelpContext = 0U;
+                pageInfo.SIZE.cx = 0;
+                pageInfo.SIZE.cy = 0;
+            }
+            pPageInfo[0] = pageInfo;
         }
 
         public void SetObjects(uint cObjects, object[] ppunk)
@@ -73,7 +101,17 @@ namespace Interop.VisualStudio
 
         public void Help(string pszHelpDir)
         {
-            throw new NotImplementedException();
+// ReSharper disable SuspiciousTypeConversion.Global
+            var serviceProvider = _site as IServiceProvider;
+            if (serviceProvider != null)
+            {
+                var service = serviceProvider as Microsoft.VisualStudio.VSHelp80.Help2;
+                if (service != null)
+                {
+                    service.DisplayTopicFromF1Keyword(pszHelpDir);
+                }
+            }
+// ReSharper restore SuspiciousTypeConversion.Global
         }
 
         public int TranslateAccelerator(MSG[] pMsg)

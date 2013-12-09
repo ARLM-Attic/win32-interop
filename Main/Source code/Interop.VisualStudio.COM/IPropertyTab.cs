@@ -9,6 +9,8 @@ namespace Interop.VisualStudio
     {
         string Title { get; }
 
+        string Description { get; }
+
         string HelpFile { get; }
 
         int HelpContext { get; }

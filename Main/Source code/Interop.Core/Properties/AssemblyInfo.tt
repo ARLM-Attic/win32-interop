@@ -6,6 +6,7 @@
 using System;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -16,6 +17,10 @@ using System.Security;
 
 [assembly: SecurityRules(SecurityRuleSet.Level2, SkipVerificationInFullTrust = true)]
 [assembly: AllowPartiallyTrustedCallers]
+[assembly: InternalsVisibleTo("Interop.Core, PublicKey=<#= PublicKey #>")]
+[assembly: InternalsVisibleTo("Interop.Core.Tests, PublicKey=<#= PublicKey #>")]
+[assembly: InternalsVisibleTo("Interop.VisualStudio, PublicKey=<#= PublicKey #>")]
+[assembly: InternalsVisibleTo("Interop.VisualStudio.COM, PublicKey=<#= PublicKey #>")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

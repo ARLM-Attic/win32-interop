@@ -56,6 +56,7 @@ namespace Interop.Core.Tests.GarbageCollection
         {
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable RedundantCast
+#pragma warning disable 1718
             var testObject = new object();
             var safeGCHandle = new SafeGCHandle(testObject, GCHandleType.Normal);
             Assert.IsTrue(safeGCHandle == safeGCHandle);
@@ -63,6 +64,7 @@ namespace Interop.Core.Tests.GarbageCollection
             Assert.IsFalse(null == safeGCHandle);
             Assert.IsTrue((SafeGCHandle)null == (SafeGCHandle)null);
             safeGCHandle.Dispose();
+#pragma warning restore 1718
 // ReSharper restore RedundantCast
 // ReSharper restore EqualExpressionComparison
         }
