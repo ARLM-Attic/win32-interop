@@ -215,7 +215,6 @@
     <Compile Include="NativeMethods\Version.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Helpers\" />
     <Folder Include="SafeNativeMethods\" />
     <Folder Include="SafeWrappers\" />
   </ItemGroup>
