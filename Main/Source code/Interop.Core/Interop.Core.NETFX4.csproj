@@ -198,6 +198,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="NativeMethods\HResult.cs" />
     <Compile Include="NativeMethods\Libraries.cs" />
+    <Compile Include="NativeMethods\ScrollBoxMessage.cs" />
     <Compile Include="UnsafeNativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Window.cs" />
     <Compile Include="UnsafeWrappers\Libraries.cs" />
@@ -207,7 +208,7 @@
     <Compile Include="Windows\HwndWrapper.cs" />
     <Compile Include="UndocumentedFeatureAttribute.cs" />
     <Compile Include="WarningAttribute.cs" />
-    <Compile Include="NativeMethods\Messages.cs" />
+    <Compile Include="NativeMethods\WindowMessage.cs" />
     <Compile Include="NativeMethods\Window.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
