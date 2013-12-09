@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-using Interop.Core.Helpers;
+using Interop.Helpers;
 
 using JetBrains.Annotations;
 

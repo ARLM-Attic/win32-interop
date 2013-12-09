@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security;
 
-using Interop.Core.Helpers;
+using Interop.Helpers;
 
 namespace Interop.Core
 {

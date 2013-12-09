@@ -6,12 +6,12 @@ using System.Linq.Expressions;
 
 using JetBrains.Annotations;
 
-namespace Interop.Core.Helpers
+namespace Interop.Helpers
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [DebuggerNonUserCode]
     [System.Diagnostics.Contracts.Pure]
-    internal static class ValidationHelper
+    public static class ValidationHelper
     {
         [ContractAnnotation("halt <= argument: null")]
         [ContractArgumentValidator]

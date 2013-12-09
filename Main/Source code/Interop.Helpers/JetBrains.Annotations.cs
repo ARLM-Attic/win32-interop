@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable InconsistentNaming
 // ReSharper disable once CheckNamespace
+
 namespace JetBrains.Annotations
 {
     /// <summary>
@@ -452,6 +453,78 @@ namespace JetBrains.Annotations
     }
 
     // ASP.NET MVC attributes
+
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    public sealed class AspMvcAreaMasterLocationFormatAttribute : Attribute
+    {
+        public AspMvcAreaMasterLocationFormatAttribute([NotNull] string format)
+        {
+            Format = format;
+        }
+
+        [NotNull]
+        public string Format { get; private set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    public sealed class AspMvcAreaPartialViewLocationFormatAttribute : Attribute
+    {
+        public AspMvcAreaPartialViewLocationFormatAttribute([NotNull] string format)
+        {
+            Format = format;
+        }
+
+        [NotNull]
+        public string Format { get; private set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    public sealed class AspMvcAreaViewLocationFormatAttribute : Attribute
+    {
+        public AspMvcAreaViewLocationFormatAttribute([NotNull] string format)
+        {
+            Format = format;
+        }
+
+        [NotNull]
+        public string Format { get; private set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    public sealed class AspMvcMasterLocationFormatAttribute : Attribute
+    {
+        public AspMvcMasterLocationFormatAttribute([NotNull] string format)
+        {
+            Format = format;
+        }
+
+        [NotNull]
+        public string Format { get; private set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    public sealed class AspMvcPartialViewLocationFormatAttribute : Attribute
+    {
+        public AspMvcPartialViewLocationFormatAttribute([NotNull] string format)
+        {
+            Format = format;
+        }
+
+        [NotNull]
+        public string Format { get; private set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    public sealed class AspMvcViewLocationFormatAttribute : Attribute
+    {
+        public AspMvcViewLocationFormatAttribute([NotNull] string format)
+        {
+            Format = format;
+        }
+
+        [NotNull]
+        public string Format { get; private set; }
+    }
 
     /// <summary>
     /// ASP.NET MVC attribute. If applied to a parameter, indicates that the parameter

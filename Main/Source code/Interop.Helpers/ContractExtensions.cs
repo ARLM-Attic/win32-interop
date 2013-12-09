@@ -13,7 +13,7 @@ namespace System.Diagnostics.Contracts
     [UsedImplicitly]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     [Conditional("CONTRACTS_FULL")]
-    internal sealed class ContractArgumentValidatorAttribute : Attribute
+    public sealed class ContractArgumentValidatorAttribute : Attribute
     {
     }
 
@@ -24,7 +24,7 @@ namespace System.Diagnostics.Contracts
     [UsedImplicitly]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     [Conditional("CONTRACTS_FULL")]
-    internal sealed class ContractAbbreviatorAttribute : Attribute
+    public sealed class ContractAbbreviatorAttribute : Attribute
     {
     }
 
@@ -34,7 +34,7 @@ namespace System.Diagnostics.Contracts
     [UsedImplicitly]
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
     [Conditional("CONTRACTS_FULL")]
-    internal sealed class ContractOptionAttribute : Attribute
+    public sealed class ContractOptionAttribute : Attribute
     {
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "category", Justification = "Build-time only attribute")]
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "setting", Justification = "Build-time only attribute")]

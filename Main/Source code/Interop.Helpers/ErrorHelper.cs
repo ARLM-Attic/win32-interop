@@ -1,56 +1,33 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics.Contracts;
+using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Interop.Core.Helpers
+namespace Interop.Helpers
 {
-    internal static class ErrorHelper
+    public static class ErrorHelper
     {
         [SecuritySafeCritical]
-        internal static IntPtr ThrowIfZero(IntPtr result)
+        public static IntPtr ThrowIfZero(IntPtr result)
         {
             Contract.Ensures(Contract.Result<IntPtr>() != IntPtr.Zero);
 
             if (result == IntPtr.Zero)
             {
-                throw new Win32Exception();
+                Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
             }
             return result;
         }
 
         [SecuritySafeCritical]
-        internal static int ThrowIfZero(int result)
+        public static T ThrowIfZero<T>(T result)
+            where T : IComparable
         {
-            Contract.Ensures(Contract.Result<int>() != 0);
-
-            if (result == 0)
-            {
-                throw new Win32Exception();
-            }
-            return result;
-        }
-
-        [SecuritySafeCritical]
-        internal static long ThrowIfZero(long result)
-        {
-            Contract.Ensures(Contract.Result<long>() != 0L);
-
-            if (result == 0L)
-            {
-                throw new Win32Exception();
-            }
-            return result;
-        }
-
-        [SecuritySafeCritical]
-        internal static NativeMethods.WindowMessage ThrowIfZero(NativeMethods.WindowMessage result)
-        {
-            Contract.Ensures(Contract.Result<NativeMethods.WindowMessage>() != 0);
+            Contract.Ensures(Contract.Result<T>().CompareTo(0) != 0);
             
-            if (result == 0)
+            if (result.CompareTo(0) == 0)
             {
-                throw new Win32Exception();
+                Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
             }
             return result;
         }

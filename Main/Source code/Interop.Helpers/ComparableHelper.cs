@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 using JetBrains.Annotations;
 
-namespace Interop.Core.Helpers
+namespace Interop.Helpers
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [DebuggerNonUserCode]
