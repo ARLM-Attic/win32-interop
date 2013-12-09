@@ -198,6 +198,7 @@
     <Compile Include="NativeMethods\Libraries.cs" />
     <Compile Include="NativeMethods\ScrollBoxMessage.cs" />
     <Compile Include="NativeMethods\WindowMessage.cs" />
+    <Compile Include="NativeMethods\WindowState.cs" />
     <Compile Include="UnsafeNativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Window.cs" />
     <Compile Include="UnsafeWrappers\Libraries.cs" />
