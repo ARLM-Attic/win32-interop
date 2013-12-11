@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 using Interop.Core;
 using Interop.Helpers;
 
+using JetBrains.Annotations;
+
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell.Interop;
 
 using IServiceProvider = System.IServiceProvider;
 
@@ -13,71 +17,42 @@ namespace Interop.VisualStudio
 {
     public class PropertyPage : IPropertyPage, IPropertyTabHost, IPropertyStorage
     {
-        private IPropertyTab _tab;
+        [NotNull]
+        private readonly IPropertyTab _tab;
+
+        [CanBeNull]
         private IPropertyPageSite _site;
+
         private bool _isInitializing;
         private bool _isChanged;
-        private string[] _configNames;
 
-        public PropertyPage(IPropertyTab tab)
+        private object[] _configs;
+        private string[] _configNames;
+        private IVsBuildPropertyStorage _buildStorage;
+
+        public PropertyPage([NotNull] IPropertyTab tab)
         {
+            ValidationHelper.NotNull(tab, "tab");
             _tab = tab;
             tab.Initialize(this);
         }
 
-        public void SetPageSite(IPropertyPageSite pPageSite)
+        public int Apply()
         {
-            _site = pPageSite;
+            _isInitializing = true;
+            _tab.SaveProperties(_configNames, this);
+            _isInitializing = false;
+            PropertiesChanged(false);
+            return (int)NativeMethods.HResult.S_OK;
         }
 
-        public void Activate(IntPtr hWndParent, RECT[] pRect, int bModal)
+        public void Activate(IntPtr hWndParent, [CanBeNull] RECT[] pRect, int bModal)
         {
             UnsafeWrappers.SetParent(_tab.Handle, hWndParent);
             Move(pRect);
         }
 
-        public void Deactivate()
-        {
-        }
-
-        public void GetPageInfo(PROPPAGEINFO[] pPageInfo)
-        {
-            ValidationHelper.NotNull(pPageInfo, "pPageInfo");
-            ValidationHelper.NotZeroLength(pPageInfo, "pPageInfo");
-            var pageInfo = pPageInfo[0];
-            pageInfo.cb = (uint)Marshal.SizeOf(typeof(PROPPAGEINFO));
-            if (_tab != null)
-            {
-                pageInfo.pszTitle = _tab.Title;
-                pageInfo.pszDocString = _tab.Description;
-                pageInfo.pszHelpFile = _tab.HelpFile;
-                pageInfo.dwHelpContext = (uint)_tab.HelpContext;
-                pageInfo.SIZE.cx = _tab.Size.Width;
-                pageInfo.SIZE.cy = _tab.Size.Height;
-            }
-            else
-            {
-                pageInfo.pszTitle = string.Empty;
-                pageInfo.pszDocString = null;
-                pageInfo.pszHelpFile = null;
-                pageInfo.dwHelpContext = 0U;
-                pageInfo.SIZE.cx = 0;
-                pageInfo.SIZE.cy = 0;
-            }
-            pPageInfo[0] = pageInfo;
-        }
-
-        public void SetObjects(uint cObjects, object[] ppunk)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Show(uint nCmdShow)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Move(RECT[] pRect)
+        public void Move([CanBeNull] RECT[] pRect)
         {
             ValidationHelper.NotNull(pRect, "pRect");
             ValidationHelper.NotZeroLength(pRect, "pRect");
@@ -86,21 +61,90 @@ namespace Interop.VisualStudio
             _tab.Size = new Size(rect.right - rect.left, rect.bottom - rect.top);
         }
 
+        public void GetPageInfo([CanBeNull] PROPPAGEINFO[] pPageInfo)
+        {
+            ValidationHelper.NotNull(pPageInfo, "pPageInfo");
+            ValidationHelper.NotZeroLength(pPageInfo, "pPageInfo");
+            var pageInfo = pPageInfo[0];
+            pageInfo.cb = (uint)Marshal.SizeOf(typeof(PROPPAGEINFO));
+            pageInfo.pszTitle = _tab.Title;
+            pageInfo.pszDocString = _tab.Description;
+            pageInfo.pszHelpFile = _tab.HelpFile;
+            pageInfo.dwHelpContext = (uint)_tab.HelpContext;
+            pageInfo.SIZE.cx = _tab.Size.Width;
+            pageInfo.SIZE.cy = _tab.Size.Height;
+            pPageInfo[0] = pageInfo;
+        }
+
         public int IsPageDirty()
         {
             return _isChanged ? (int)NativeMethods.HResult.S_OK : (int)NativeMethods.HResult.S_FALSE;
         }
 
-        public int Apply()
+        public void SetPageSite([CanBeNull] IPropertyPageSite pPageSite)
         {
-            if (_tab != null)
+            _site = pPageSite;
+        }
+
+        public void SetObjects(uint cObjects, object[] ppunk)
+        {
+            _configs = null;
+            _configNames = null;
+            _buildStorage = null;
+            if (ppunk != null)
             {
+                _configs = ppunk;
+                SetBuildStorage();
+                SetConfigurationNames();
                 _isInitializing = true;
-                _tab.SaveProperties(_configNames, this);
+                _tab.LoadProperties(_configNames, this);
                 _isInitializing = false;
                 PropertiesChanged(false);
             }
-            return (int)NativeMethods.HResult.S_OK;
+        }
+
+        private void SetBuildStorage()
+        {
+            foreach (var config in _configs.Where(config => config != null))
+            {
+                var vsCfgBrowseObject = config as IVsCfgBrowseObject;
+                IVsHierarchy pHier = null;
+                uint pItemid;
+                if (vsCfgBrowseObject != null)
+                {
+                    vsCfgBrowseObject.GetProjectItem(out pHier, out pItemid);
+                }
+                else
+                {
+                    var vsBrowseObject = config as IVsBrowseObject;
+                    if (vsBrowseObject != null)
+                    {
+                        vsBrowseObject.GetProjectItem(out pHier, out pItemid);
+                    }
+                }
+                _buildStorage = pHier as IVsBuildPropertyStorage;
+                if (_buildStorage != null)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void SetConfigurationNames()
+        {
+            _configNames = new string[_configs.Length];
+            for (var index = 0; index < _configs.Length; index++)
+            {
+                var vsCfg = _configs[index] as IVsCfg;
+                if (vsCfg != null)
+                {
+                    vsCfg.get_DisplayName(out _configNames[index]);
+                }
+                if (_configNames[index] == null)
+                {
+                    _configNames[index] = string.Empty;
+                }
+            }
         }
 
         public void Help(string pszHelpDir)
@@ -116,6 +160,17 @@ namespace Interop.VisualStudio
                 }
             }
 // ReSharper restore SuspiciousTypeConversion.Global
+        }
+
+        public void Deactivate()
+        {
+        }
+
+
+
+        public void Show(uint nCmdShow)
+        {
+            throw new NotImplementedException();
         }
 
         public int TranslateAccelerator(MSG[] pMsg)
@@ -160,14 +215,13 @@ namespace Interop.VisualStudio
 
         private void PropertiesChanged(bool isChanged)
         {
-            if (_isChanged == isChanged || _isInitializing)
+            if (_isChanged != isChanged && !_isInitializing)
             {
-                return;
-            }
-            _isChanged = isChanged;
-            if (_site != null)
-            {
-                _site.OnStatusChange(isChanged ? (uint)PROPPAGESTATUS.PROPPAGESTATUS_DIRTY | (uint)PROPPAGESTATUS.PROPPAGESTATUS_VALIDATE : (uint)PROPPAGESTATUS.PROPPAGESTATUS_CLEAN);
+                _isChanged = isChanged;
+                if (_site != null)
+                {
+                    _site.OnStatusChange(isChanged ? (uint)PROPPAGESTATUS.PROPPAGESTATUS_DIRTY | (uint)PROPPAGESTATUS.PROPPAGESTATUS_VALIDATE : (uint)PROPPAGESTATUS.PROPPAGESTATUS_CLEAN);
+                }
             }
         }
     }
