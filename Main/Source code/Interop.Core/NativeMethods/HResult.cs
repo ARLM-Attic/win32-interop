@@ -1,10 +1,9 @@
 ﻿using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
-
 namespace Interop.Core
 {
-// ReSharper disable InconsistentNaming
+    // ReSharper disable InconsistentNaming
     public static partial class NativeMethods
     {
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -35,6 +34,4 @@ namespace Interop.Core
             E_ACCESSDENIED = unchecked((int)0x80070005)
         }
     }
-
-// ReSharper restore InconsistentNaming
 }

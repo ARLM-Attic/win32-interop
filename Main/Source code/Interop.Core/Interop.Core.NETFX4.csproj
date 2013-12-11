@@ -197,9 +197,11 @@
     <Compile Include="GarbageCollection\WeakStorage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="NativeMethods\HResult.cs" />
+    <Compile Include="NativeMethods\IIDs.cs" />
     <Compile Include="NativeMethods\Libraries.cs" />
     <Compile Include="NativeMethods\ScrollBoxMessage.cs" />
     <Compile Include="NativeMethods\WindowState.cs" />
+    <Compile Include="UnsafeNativeMethods\IClassFactory.cs" />
     <Compile Include="UnsafeNativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Window.cs" />
     <Compile Include="UnsafeWrappers\Libraries.cs" />

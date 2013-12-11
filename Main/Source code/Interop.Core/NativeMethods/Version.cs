@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace Interop.Core
 {
+    // ReSharper disable InconsistentNaming
     public static partial class NativeMethods
     {
-// ReSharper disable InconsistentNaming
         private static readonly Dictionary<WINVER, string> WindowsVersions = new Dictionary<WINVER, string>
         {
             { WINVER.WindowsXP, "Windows XP" },
@@ -38,7 +39,5 @@ namespace Interop.Core
         {
             return WindowsVersions[winver];
         }
-
-// ReSharper restore InconsistentNaming
     }
 }

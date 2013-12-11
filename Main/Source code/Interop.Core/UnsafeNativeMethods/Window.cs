@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+// ReSharper disable once CheckNamespace
 namespace Interop.Core
 {
+    // ReSharper disable InconsistentNaming
     public static partial class UnsafeNativeMethods
     {
         [DllImport(NativeMethods.ExternDll.User32, CharSet = CharSet.Unicode, BestFitMapping = false, SetLastError = true)]
