@@ -81,9 +81,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IPropertyStorage.cs" />
-    <Compile Include="IPropertyTab.cs" />
-    <Compile Include="IPropertyTabHost.cs" />
+    <Compile Include="IPropertyStore.cs" />
+    <Compile Include="IPropertyView.cs" />
+    <Compile Include="IPropertyViewSite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

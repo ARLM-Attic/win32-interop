@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 
 using Interop.Core;
 using Interop.Helpers;
+using Interop.VisualStudio.COM;
 
 using JetBrains.Annotations;
 
@@ -15,10 +17,11 @@ using IServiceProvider = System.IServiceProvider;
 
 namespace Interop.VisualStudio
 {
-    public class PropertyPage : IPropertyPage, IPropertyTabHost, IPropertyStorage
+    [PublicAPI]
+    public class PropertyPage : IPropertyPage, IPropertyViewSite, IPropertyStore
     {
         [NotNull]
-        private readonly IPropertyTab _tab;
+        private readonly IPropertyView _view;
 
         [CanBeNull]
         private IPropertyPageSite _site;
@@ -30,17 +33,17 @@ namespace Interop.VisualStudio
         private string[] _configNames;
         private IVsBuildPropertyStorage _buildStorage;
 
-        public PropertyPage([NotNull] IPropertyTab tab)
+        public PropertyPage([NotNull] IPropertyView tab)
         {
             ValidationHelper.NotNull(tab, "tab");
-            _tab = tab;
+            _view = tab;
             tab.Initialize(this);
         }
 
         public int Apply()
         {
             _isInitializing = true;
-            _tab.SaveProperties(_configNames, this);
+            _view.SaveProperties(_configNames, this);
             _isInitializing = false;
             PropertiesChanged(false);
             return (int)NativeMethods.HResult.S_OK;
@@ -48,7 +51,9 @@ namespace Interop.VisualStudio
 
         public void Activate(IntPtr hWndParent, [CanBeNull] RECT[] pRect, int bModal)
         {
-            UnsafeWrappers.SetParent(_tab.Handle, hWndParent);
+            ValidationHelper.NotNull(pRect, "pRect");
+            ValidationHelper.NotZeroLength(pRect, "pRect");
+            UnsafeWrappers.SetParent(_view.Handle, hWndParent);
             Move(pRect);
         }
 
@@ -57,8 +62,8 @@ namespace Interop.VisualStudio
             ValidationHelper.NotNull(pRect, "pRect");
             ValidationHelper.NotZeroLength(pRect, "pRect");
             var rect = pRect[0];
-            _tab.Location = new Point(rect.left, rect.top);
-            _tab.Size = new Size(rect.right - rect.left, rect.bottom - rect.top);
+            _view.Location = new Point(rect.left, rect.top);
+            _view.Size = new Size(rect.right - rect.left, rect.bottom - rect.top);
         }
 
         public void GetPageInfo([CanBeNull] PROPPAGEINFO[] pPageInfo)
@@ -67,12 +72,12 @@ namespace Interop.VisualStudio
             ValidationHelper.NotZeroLength(pPageInfo, "pPageInfo");
             var pageInfo = pPageInfo[0];
             pageInfo.cb = (uint)Marshal.SizeOf(typeof(PROPPAGEINFO));
-            pageInfo.pszTitle = _tab.Title;
-            pageInfo.pszDocString = _tab.Description;
-            pageInfo.pszHelpFile = _tab.HelpFile;
-            pageInfo.dwHelpContext = (uint)_tab.HelpContext;
-            pageInfo.SIZE.cx = _tab.Size.Width;
-            pageInfo.SIZE.cy = _tab.Size.Height;
+            pageInfo.pszTitle = _view.Title;
+            pageInfo.pszDocString = _view.Description;
+            pageInfo.pszHelpFile = _view.HelpFile;
+            pageInfo.dwHelpContext = (uint)_view.HelpContext;
+            pageInfo.SIZE.cx = _view.Size.Width;
+            pageInfo.SIZE.cy = _view.Size.Height;
             pPageInfo[0] = pageInfo;
         }
 
@@ -97,7 +102,7 @@ namespace Interop.VisualStudio
                 SetBuildStorage();
                 SetConfigurationNames();
                 _isInitializing = true;
-                _tab.LoadProperties(_configNames, this);
+                _view.LoadProperties(_configNames, this);
                 _isInitializing = false;
                 PropertiesChanged(false);
             }
@@ -147,70 +152,95 @@ namespace Interop.VisualStudio
             }
         }
 
-        public void Help(string pszHelpDir)
+        public object GetProperty(bool perUser, string configName, string propertyName, object defaultValue)
         {
-// ReSharper disable SuspiciousTypeConversion.Global
-            var serviceProvider = _site as IServiceProvider;
-            if (serviceProvider != null)
+            object result = null;
+            string pbstrPropValue;
+            if (_buildStorage != null && _buildStorage.GetPropertyValue(propertyName, configName, !perUser ? (uint)_PersistStorageType.PST_PROJECT_FILE : (uint)_PersistStorageType.PST_USER_FILE, out pbstrPropValue) == (int)NativeMethods.HResult.S_OK)
             {
-                var service = serviceProvider as Microsoft.VisualStudio.VSHelp80.Help2;
-                if (service != null)
+                result = pbstrPropValue;
+            }
+            if (result == null)
+            {
+                return defaultValue;
+            }
+            if (defaultValue == null)
+            {
+                return result;
+            }
+            try
+            {
+                return Convert.ChangeType(result, defaultValue.GetType(), CultureInfo.InvariantCulture);
+            }
+            catch (InvalidCastException ex)
+            {
+                return defaultValue;
+            }
+        }
+
+        public object GetProperties(bool perUser, string[] configNames, string propertyName, object defaultValue)
+        {
+            ValidationHelper.NotNull(configNames, "configNames");
+            ValidationHelper.NotZeroLength(configNames, "configNames");
+            object result = null;
+            foreach (var property in configNames.Select(configName => GetProperty(perUser, configName, propertyName, defaultValue)))
+            {
+                if (property == null)
                 {
-                    service.DisplayTopicFromF1Keyword(_tab.HelpKeyword);
+                    return null;
+                }
+                if (result == null)
+                {
+                    result = property;
+                }
+                else if (!property.Equals(result))
+                {
+                    return null;
                 }
             }
-// ReSharper restore SuspiciousTypeConversion.Global
+            return result;
         }
 
-        public void Deactivate()
+        public void SetProperty(bool perUser, string configName, string propertyName, object value)
         {
+            ValidationHelper.NotNull(value, "value");
+            if (_buildStorage != null)
+            {
+                ErrorHelper.ThrowIfNotZero(_buildStorage.SetPropertyValue(propertyName, configName, !perUser ? (uint)_PersistStorageType.PST_PROJECT_FILE : (uint)_PersistStorageType.PST_USER_FILE, value.ToString()));
+            }
         }
 
-
-
-        public void Show(uint nCmdShow)
+        public void SetProperties(bool perUser, string[] configNames, string propertyName, object value)
         {
-            throw new NotImplementedException();
-        }
-
-        public int TranslateAccelerator(MSG[] pMsg)
-        {
-            return _site != null ? _site.TranslateAccelerator(pMsg) : (int)NativeMethods.HResult.E_NOTIMPL;
-        }
-
-        public string GetProperty(bool perUser, string configName, string propertyName, string defaultValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetProperties(bool perUser, string[] configNames, string propertyName, string defaultValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetProperty(bool perUser, string configName, string propertyName, string value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetProperties(bool perUser, string[] configNames, string propertyName, string value)
-        {
-            throw new NotImplementedException();
+            ValidationHelper.NotNull(configNames, "configNames");
+            ValidationHelper.NotZeroLength(configNames, "configNames");
+            foreach (var configName in configNames)
+            {
+                SetProperty(perUser, configName, propertyName, value);
+            }
         }
 
         public void RemoveProperty(bool perUser, string configName, string propertyName)
         {
-            throw new NotImplementedException();
+            if (_buildStorage != null)
+            {
+                ErrorHelper.ThrowIfNotZero(_buildStorage.RemoveProperty(propertyName, configName, !perUser ? (uint)_PersistStorageType.PST_PROJECT_FILE : (uint)_PersistStorageType.PST_USER_FILE));
+            }
         }
 
         public void RemoveProperties(bool perUser, string[] configNames, string propertyName)
         {
-            throw new NotImplementedException();
+            ValidationHelper.NotNull(configNames, "configNames");
+            ValidationHelper.NotZeroLength(configNames, "configNames");
+            foreach (var configName in configNames)
+            {
+                RemoveProperty(perUser, configName, propertyName);
+            }
         }
 
         public void PropertiesChanged()
         {
-            throw new NotImplementedException();
+            PropertiesChanged(true);
         }
 
         private void PropertiesChanged(bool isChanged)
@@ -223,6 +253,44 @@ namespace Interop.VisualStudio
                     _site.OnStatusChange(isChanged ? (uint)PROPPAGESTATUS.PROPPAGESTATUS_DIRTY | (uint)PROPPAGESTATUS.PROPPAGESTATUS_VALIDATE : (uint)PROPPAGESTATUS.PROPPAGESTATUS_CLEAN);
                 }
             }
+        }
+
+        public int TranslateAccelerator(MSG[] pMsg)
+        {
+            return _site != null ? _site.TranslateAccelerator(pMsg) : (int)NativeMethods.HResult.E_NOTIMPL;
+        }
+
+        public void Show(uint nCmdShow)
+        {
+            switch (nCmdShow)
+            {
+                case (uint)NativeMethods.WindowState.SW_SHOWNORMAL:
+                case (uint)NativeMethods.WindowState.SW_SHOW:
+                    _view.Show();
+                    break;
+                case (uint)NativeMethods.WindowState.SW_HIDE:
+                    _view.Hide();
+                    break;
+            }
+        }
+
+        public void Help(string pszHelpDir)
+        {
+// ReSharper disable SuspiciousTypeConversion.Global
+            var serviceProvider = _site as IServiceProvider;
+            if (serviceProvider != null)
+            {
+                var service = serviceProvider as Microsoft.VisualStudio.VSHelp80.Help2;
+                if (service != null)
+                {
+                    service.DisplayTopicFromF1Keyword(_view.HelpKeyword);
+                }
+            }
+// ReSharper restore SuspiciousTypeConversion.Global
+        }
+
+        public void Deactivate()
+        {
         }
     }
 }

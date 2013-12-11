@@ -2,10 +2,10 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace Interop.VisualStudio
+namespace Interop.VisualStudio.COM
 {
     [Guid("B9F27534-9FD1-496A-B715-8F740BEC61C3")]
-    public interface IPropertyTab
+    public interface IPropertyView
     {
         string Title { get; }
 
@@ -23,11 +23,11 @@ namespace Interop.VisualStudio
 
         Point Location { get; set; }
 
-        void Initialize(IPropertyTabHost host);
+        void Initialize(IPropertyViewSite host);
 
-        void LoadProperties(string[] configNames, IPropertyStorage storage);
+        void LoadProperties(string[] configNames, IPropertyStore storage);
 
-        void SaveProperties(string[] configNames, IPropertyStorage storage);
+        void SaveProperties(string[] configNames, IPropertyStore storage);
 
         void Show();
 

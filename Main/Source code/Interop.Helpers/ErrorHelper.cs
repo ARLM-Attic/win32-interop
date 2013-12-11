@@ -21,7 +21,7 @@ namespace Interop.Helpers
 
         [SecuritySafeCritical]
         public static T ThrowIfZero<T>(T result)
-            where T : IComparable
+            where T : struct, IComparable
         {
             Contract.Ensures(Contract.Result<T>().CompareTo(0) != 0);
             
@@ -30,6 +30,29 @@ namespace Interop.Helpers
                 Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
             }
             return result;
+        }
+
+        [SecuritySafeCritical]
+        public static void ThrowIfNotZero(IntPtr result)
+        {
+            Contract.Ensures(Contract.Result<IntPtr>() == IntPtr.Zero);
+
+            if (result != IntPtr.Zero)
+            {
+                Marshal.ThrowExceptionForHR(result.ToInt32());
+            }
+        }
+
+        [SecuritySafeCritical]
+        public static void ThrowIfNotZero<T>(T result)
+            where T : struct, IComparable
+        {
+            Contract.Ensures(Contract.Result<T>().CompareTo(0) == 0);
+
+            if (result.CompareTo(0) != 0)
+            {
+                Marshal.ThrowExceptionForHR(Convert.ToInt32(result));
+            }
         }
     }
 }
