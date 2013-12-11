@@ -14,6 +14,7 @@ namespace Interop.Core
             public const string GDI32 = "gdi32.dll";
             public const string DWMAPI = "dwmapi.dll";
             public const string Shell32 = "shell32.dll";
+            public const string OLE32 = "ole32.dll";
         }
     }
 }
