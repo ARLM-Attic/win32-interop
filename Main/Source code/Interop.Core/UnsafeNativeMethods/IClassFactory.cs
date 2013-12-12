@@ -14,10 +14,12 @@ namespace Interop.Core
         internal interface IClassFactory
         {
             [MethodImpl(MethodImplOptions.PreserveSig)]
-            int CreateInstance(IntPtr pUnkOuter, ref Guid riid, out IntPtr ppvObject);
+            [return: MarshalAs(UnmanagedType.Error)]
+            NativeMethods.HResult CreateInstance([MarshalAs(UnmanagedType.IUnknown)] object pUnkOuter, [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppvObject);
 
             [MethodImpl(MethodImplOptions.PreserveSig)]
-            int LockServer(bool fLock);
+            [return: MarshalAs(UnmanagedType.Error)]
+            NativeMethods.HResult LockServer([MarshalAs(UnmanagedType.Bool)] bool fLock);
         }
     }
 }

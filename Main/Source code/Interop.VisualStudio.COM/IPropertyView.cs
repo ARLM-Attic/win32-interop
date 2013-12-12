@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Interop.VisualStudio.COM
 {
-    [Guid("B9F27534-9FD1-496A-B715-8F740BEC61C3")]
+    [Guid(IIDs.IID_IPropertyView)]
     public interface IPropertyView
     {
         string Title { get; }

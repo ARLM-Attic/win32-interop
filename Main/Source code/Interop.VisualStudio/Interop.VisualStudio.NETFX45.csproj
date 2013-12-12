@@ -94,6 +94,7 @@
       <DependentUpon>AssemblyInfo.tt</DependentUpon>
     </Compile>
     <Compile Include="PropertyPage.cs" />
+    <Compile Include="PropertyPageFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Interop.Core\Interop.Core.NETFX45.csproj">

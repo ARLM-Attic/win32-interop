@@ -207,6 +207,7 @@
     <Compile Include="UnsafeNativeMethods\IClassFactory.cs" />
     <Compile Include="UnsafeNativeMethods\Libraries.cs" />
     <Compile Include="UnsafeNativeMethods\Window.cs" />
+    <Compile Include="UnsafeWrappers\COM.cs" />
     <Compile Include="UnsafeWrappers\Libraries.cs" />
     <Compile Include="UnsafeWrappers\Window.cs" />
     <Compile Include="VersionAttribute.cs" />

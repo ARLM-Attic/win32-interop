@@ -2,7 +2,7 @@
 
 namespace Interop.VisualStudio.COM
 {
-    [Guid("5B1F894B-4680-4E63-8186-80E3F92060D8")]
+    [Guid(IIDs.IID_IPropertyStore)]
     public interface IPropertyStore
     {
         object GetProperty(bool perUser, string configName, string propertyName, object defaultValue);

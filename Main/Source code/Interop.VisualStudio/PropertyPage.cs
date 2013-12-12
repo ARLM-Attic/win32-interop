@@ -172,7 +172,7 @@ namespace Interop.VisualStudio
             {
                 return Convert.ChangeType(result, defaultValue.GetType(), CultureInfo.InvariantCulture);
             }
-            catch (InvalidCastException ex)
+            catch (InvalidCastException)
             {
                 return defaultValue;
             }

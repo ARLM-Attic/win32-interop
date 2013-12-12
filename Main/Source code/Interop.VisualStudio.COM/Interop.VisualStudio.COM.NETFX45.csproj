@@ -79,6 +79,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IIDs.cs" />
     <Compile Include="IPropertyStore.cs" />
     <Compile Include="IPropertyView.cs" />
     <Compile Include="IPropertyViewSite.cs" />
