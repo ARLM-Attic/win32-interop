@@ -35,8 +35,6 @@ namespace Interop.Helpers
         [SecuritySafeCritical]
         public static void ThrowIfNotZero(IntPtr result)
         {
-            Contract.Ensures(Contract.Result<IntPtr>() == IntPtr.Zero);
-
             if (result != IntPtr.Zero)
             {
                 Marshal.ThrowExceptionForHR(result.ToInt32());
@@ -47,8 +45,6 @@ namespace Interop.Helpers
         public static void ThrowIfNotZero<T>(T result)
             where T : struct, IComparable
         {
-            Contract.Ensures(Contract.Result<T>().CompareTo(0) == 0);
-
             if (result.CompareTo(0) != 0)
             {
                 Marshal.ThrowExceptionForHR(Convert.ToInt32(result));
