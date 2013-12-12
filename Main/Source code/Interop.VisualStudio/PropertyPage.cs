@@ -40,6 +40,18 @@ namespace Interop.VisualStudio
             tab.Initialize(this);
         }
 
+        [PublicAPI]
+        public static int RegisterAttached(Guid pageid, Guid clsid)
+        {
+            return UnsafeWrappers.CoRegisterClassObject(pageid, new PropertyPageFactory(clsid), NativeMethods.CLSCTX.CLSCTX_INPROC_SERVER, NativeMethods.REGCLS.REGCLS_MULTIPLEUSE);
+        }
+
+        [PublicAPI]
+        public static void UnregisterAttached(int cookie)
+        {
+            UnsafeWrappers.CoRevokeClassObject(cookie);
+        }
+
         public int Apply()
         {
             _isInitializing = true;
@@ -156,7 +168,8 @@ namespace Interop.VisualStudio
         {
             object result = null;
             string pbstrPropValue;
-            if (_buildStorage != null && _buildStorage.GetPropertyValue(propertyName, configName, !perUser ? (uint)_PersistStorageType.PST_PROJECT_FILE : (uint)_PersistStorageType.PST_USER_FILE, out pbstrPropValue) == (int)NativeMethods.HResult.S_OK)
+            if (_buildStorage != null &&
+                _buildStorage.GetPropertyValue(propertyName, configName, !perUser ? (uint)_PersistStorageType.PST_PROJECT_FILE : (uint)_PersistStorageType.PST_USER_FILE, out pbstrPropValue) == (int)NativeMethods.HResult.S_OK)
             {
                 result = pbstrPropValue;
             }
@@ -276,7 +289,7 @@ namespace Interop.VisualStudio
 
         public void Help(string pszHelpDir)
         {
-// ReSharper disable SuspiciousTypeConversion.Global
+            // ReSharper disable SuspiciousTypeConversion.Global
             var serviceProvider = _site as IServiceProvider;
             if (serviceProvider != null)
             {
@@ -286,7 +299,7 @@ namespace Interop.VisualStudio
                     service.DisplayTopicFromF1Keyword(_view.HelpKeyword);
                 }
             }
-// ReSharper restore SuspiciousTypeConversion.Global
+            // ReSharper restore SuspiciousTypeConversion.Global
         }
 
         public void Deactivate()
