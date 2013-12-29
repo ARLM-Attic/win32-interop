@@ -103,7 +103,7 @@ namespace Interop.VisualStudio
             _site = pPageSite;
         }
 
-        public void SetObjects(uint cObjects, object[] ppunk)
+        public void SetObjects(uint cObjects, [CanBeNull] object[] ppunk)
         {
             _configs = null;
             _configNames = null;
@@ -112,6 +112,7 @@ namespace Interop.VisualStudio
             {
                 _configs = ppunk;
                 SetBuildStorage();
+                _configNames = new string[_configs.Length];
                 SetConfigurationNames();
                 _isInitializing = true;
                 _view.LoadProperties(_configNames, this);
@@ -149,7 +150,6 @@ namespace Interop.VisualStudio
 
         private void SetConfigurationNames()
         {
-            _configNames = new string[_configs.Length];
             for (var index = 0; index < _configs.Length; index++)
             {
                 var vsCfg = _configs[index] as IVsCfg;

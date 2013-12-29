@@ -1,20 +1,25 @@
 ﻿using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace Interop.VisualStudio.COM
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [Guid(IIDs.IID_IPropertyStore)]
     public interface IPropertyStore
     {
-        object GetProperty(bool perUser, string configName, string propertyName, object defaultValue);
+        [CanBeNull]
+        object GetProperty(bool perUser, [NotNull] string configName, [NotNull] string propertyName, [CanBeNull] object defaultValue);
 
-        object GetProperties(bool perUser, string[] configNames, string propertyName, object defaultValue);
+        [CanBeNull]
+        object GetProperties(bool perUser, [NotNull] string[] configNames, [NotNull] string propertyName, [CanBeNull] object defaultValue);
 
-        void SetProperty(bool perUser, string configName, string propertyName, object value);
+        void SetProperty(bool perUser, [NotNull] string configName, [NotNull] string propertyName, [CanBeNull] object value);
 
-        void SetProperties(bool perUser, string[] configNames, string propertyName, object value);
+        void SetProperties(bool perUser, [NotNull] string[] configNames, [NotNull] string propertyName, [CanBeNull] object value);
 
-        void RemoveProperty(bool perUser, string configName, string propertyName);
+        void RemoveProperty(bool perUser, [NotNull] string configName, [NotNull] string propertyName);
 
-        void RemoveProperties(bool perUser, string[] configNames, string propertyName);
+        void RemoveProperties(bool perUser, [NotNull] string[] configNames, [NotNull] string propertyName);
     }
 }

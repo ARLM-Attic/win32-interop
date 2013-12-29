@@ -2,17 +2,24 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace Interop.VisualStudio.COM
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [Guid(IIDs.IID_IPropertyView)]
     public interface IPropertyView
     {
+        [NotNull]
         string Title { get; }
 
+        [CanBeNull]
         string Description { get; }
 
+        [CanBeNull]
         string HelpKeyword { get; }
 
+        [CanBeNull]
         string HelpFile { get; }
 
         int HelpContext { get; }
@@ -23,11 +30,11 @@ namespace Interop.VisualStudio.COM
 
         Point Location { get; set; }
 
-        void Initialize(IPropertyViewSite host);
+        void Initialize([NotNull] IPropertyViewSite host);
 
-        void LoadProperties(string[] configNames, IPropertyStore storage);
+        void LoadProperties([NotNull] string[] configNames, [NotNull] IPropertyStore storage);
 
-        void SaveProperties(string[] configNames, IPropertyStore storage);
+        void SaveProperties([NotNull] string[] configNames, [NotNull] IPropertyStore storage);
 
         void Show();
 
